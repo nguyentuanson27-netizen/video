@@ -1,0 +1,54 @@
+# Credentials and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+.venv/
+venv/
+node_modules/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+dist/
+build/
+*.log
+
+# Runtime media and machine-local caches
+runtime/
+cache/
+tmp/
+temp/
+models/
+weights/
+*.onnx
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.mp4
+*.mov
+*.mkv
+*.wav
+*.mp3
+*.flac
+*.webm
+*.zip
+
+# Keep only explicit documented metadata/sources in Git, not production payloads
+episodes/**/assets/
+episodes/**/renders/
+episodes/**/frames/
+episodes/**/audio/
+episodes/**/cache/
+episodes/**/sources/private/
+episodes/**/originals/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
