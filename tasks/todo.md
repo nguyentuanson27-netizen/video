@@ -33,7 +33,7 @@
 **Tiêu chí nghiệm thu:**
 - [x] 3 clip MP4, mỗi clip khoảng 8–15 giây 720p, có parallax/camera và không chỉ trượt ảnh toàn khung.
 - [x] Có contact sheet/reference và nhận xét chất lượng, thời gian render, nguồn asset.
-- [ ] Người dùng chọn 1 phong cách, lưu lựa chọn trong `style.md`.
+- [x] Người dùng chọn 1 phong cách, lưu lựa chọn trong `style.md`.
 
 **Kiểm chứng:** ffprobe từng demo; xem 3 clip; xác nhận của người dùng.  
 **Phụ thuộc:** M01.  
@@ -55,7 +55,7 @@
 - FFmpeg giải mã đủ 288 frame mỗi clip với `-xerror`. Bộ lọc blackdetect không báo đoạn đen. FFplay với SDL dummy chạy hết cả ba MP4, mã thoát 0. Log và JSON ffprobe có tiền tố `m02-v3-` trong `work/`.
 - Đã xem chín khung trích ở giây 1, 6 và 11 trên `work/m02-v3-contact.png`. Cả ba giữ parallax giữa các lớp và thể hiện tư thế cầm đèn thấp, giơ cao, rồi hạ xuống. Sóng cảnh C thay đổi đường viền ở mỗi mốc.
 - Ba tệp MP4 có SHA-256 khác nhau. Đã render lại cảnh kỹ thuật bằng `studio.py` và so SHA-256 trùng bản M01. `--demo invalid` trả mã thoát 2, `compileall` và `pip check` đạt.
-- [style.md](../style.md) ghi nguồn hình tự vẽ, nhận xét từng phương án và trạng thái chờ chủ dự án chọn A, B hoặc C.
+- Ngày 2026-11-16 (UTC+07:00), chủ dự án xác nhận “chọn B” trong Codex. Đã đối chiếu SHA-256 của clip B v3 và ghi quyết định trong [style.md](../style.md).
 
 ## M03 — Chọn tác phẩm, viết script 60 giây và duyệt
 
@@ -140,7 +140,7 @@
 
 ## Checklist Done cho MVP
 
-- [ ] 3 demo chuyển động, user chọn style
+- [x] 3 demo chuyển động, user chọn style
 - [ ] 2 lần duyệt script + storyboard, đúng phiên bản
 - [ ] 1 tác phẩm phù hợp quyền thương mại và lời bình nguyên bản
 - [ ] Voice Việt được người dùng đồng ý, có timing thực
