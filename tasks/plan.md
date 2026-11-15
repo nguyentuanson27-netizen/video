@@ -1,65 +1,88 @@
-# Implementation plan — after SPEC approval
+# /plan — MVP AI Video Studio (tối giản, 60 giây)
 
-**Status:** proposed / no implementation yet. Dependency direction: discovery → 3 demos → human style choice → pilot → recovery → scaling. Do not code this in the documentation PR.
+**Trạng thái:** Đề xuất để review, **chưa có code chạy**. Cơ sở: [SPEC v1](../docs/spec.md) đã merge, yêu cầu mới nhất của chủ dự án: *ưu tiên có MVP chạy thật, không over-engineer, không xây bảo mật phức tạp*.  
+**Mốc đầu tiên:** 3 demo phong cách 2.5D thực sự chuyển động → người dùng chọn style → 1 pilot **60 giây** với giọng đọc tiếng Việt, nhạc/SFX, phụ đề và bản MP4 1080p/24fps.
 
-## Phase 0 — Repo bootstrap (documentation)
+## 1. Definition of MVP (không phải sản phẩm 30 phút)
 
-- **Deliverable:** README, AGENTS, SPEC, architecture, contracts, rights, workflow, verification, tasks.
-- **Gate:** Human reviews/approves this documentation PR. No runtime claim.
+Một lượt chạy qua **Codex PC trên Windows** được coi là MVP đạt khi:
 
-## Phase 1 — Ground truth and engine assessment
+1. Có **3 video demo khác nhau** (mỗi video khoảng 8–15 giây, 720p, có parallax/camera 2.5D thực) và người dùng chọn 1 phong cách.
+2. Dùng **1 tác phẩm văn học xác minh thuộc phạm vi công cộng**. Có kịch bản tiếng Việt khoảng 60 giây, phần tóm tắt + nhận xét riêng, các luận điểm quan trọng kèm nguồn.
+3. Người dùng **duyệt kịch bản** và **duyệt storyboard** qua Codex PC. Ghi vào file Markdown: thời điểm, bản nội dung/hash được duyệt; thay đổi nội dung thì phải hỏi duyệt lại. Đây là checkpoint công việc, **không cần chữ ký số, tài khoản, service hay cơ chế chống agent giả mạo** trong MVP.
+4. Có giọng TTS tiếng Việt được người dùng đồng ý dùng thử và có quyền sử dụng phù hợp, đo thời lượng thật trước storyboard. Nếu chưa có giọng được chấp thuận thì **dừng ở VOICE_PENDING**, không làm giả voice hay âm thầm chọn giọng cuối.
+5. Tạo preview 720p; bản cuối **1920×1080/24fps render lại từ scene nguồn** (không upscale), có giọng, nhạc/SFX và phụ đề đồng bộ; xuất **MP4, SRT, thumbnail, title/description và ghi chú nguồn/quyền**.
+6. Người dùng xem hết pilot, chấp nhận chất lượng; có thể **chỉ render lại 1 scene lỗi**, không phải làm lại từ đầu. Không có chi phí mới, không tự đăng YouTube.
 
-1. Host survey and project-scoped installation permissions; record Node/Python/FFmpeg/GPU/RAM/paths and image entitlement.
-2. Assess Lemo-Opuscar and other candidate engines, investigate current official docs/licensing. Log candidates rejected as incompatible, and pin tested versions.
-3. Design common micro-storyboard 10–20 s and run each candidate with same subject and visual constraints; collect actual frames, MP4, logs, ffprobe and peak resource numbers.
-4. Review decision matrix; user approves engine. No spending.
+Không cam kết video 20–30 phút hay ≥1 video/ngày trong MVP.
 
-**Checkpoint:** Candidate comparison with measured data and no claim of 30 min throughput.
+## 2. Quyết định giảm độ phức tạp
 
-## Phase 2 — 3 style demos
+| Làm trong MVP | KHÔNG làm trước pilot |
+| --- | --- |
+| Một công cụ render khả thi sau thử 10–20 giây | Framework adapter/plugin cho nhiều engine |
+| Script/scene đơn giản + FFmpeg + file Markdown/JSON tối thiểu | Database, queue server, scheduler, Windows service |
+| Codex PC điều khiển tuần tự, 1 worker | Web UI, multi-agent dispatcher, cloud GPU |
+| Hai lần duyệt qua chat Codex + ghi hash/tên bản | Ký approval, audit service, auth/role, event-sourcing |
+| Nguồn và quyền asset ghi trong 1 file | Rights management platform, full source-claim database |
+| Hash đơn giản để nhận diện scene cần làm lại | Cache phân tán, tự động dọn/xóa dữ liệu |
+| Kiểm tra bằng ffprobe + xem/nghe pilot | CI phức tạp, telemetry, metrics service |
+| Sử dụng quota miễn phí/đã có quyền, xử lý offline khi có thể | Tự đăng YouTube hoặc trả phí API |
 
-1. Define three distinct **cinematic 2.5D** treatments without pixel art, with character/setting reference and image rights.
-2. Generate/obtain legitimate layered assets; keep asset registry and deterministic style bible drafts.
-3. Produce true short animations and contact sheets (camera/parallax/environmental/limited character motion).
-4. Review with owner; one winning style approved.
+**Giữ những rào chắn tối thiểu:** không tự chi tiền, không đưa file riêng lên dịch vụ khác nếu chưa được phép, không dùng asset/tác phẩm mơ hồ bản quyền, không bỏ qua hai lần duyệt, không coi video lỗi là hoàn tất.
 
-**Checkpoint:** Three playable demos; consistent chosen visual rules.
+## 3. Công nghệ và thư mục — linh hoạt, không lock sớm
 
-## Phase 3 — Pilot 60 seconds
+- Trên máy Windows thật: kiểm tra Python/Node, FFmpeg/ffprobe, RAM và ổ trống bằng lệnh thật. Không giả định ổ D: hoặc phiên bản Windows.
+- Thử tạo **một scene chuyển động 2.5D 10–20 giây** bằng giải pháp nhẹ nhất khả dụng. Có thể dùng Lemo-Opuscar nếu chạy tốt; nếu không, dùng HTML Canvas/JS + FFmpeg (hoặc giải pháp đơn giản hơn được chứng minh). **Chọn một cách chạy được**, không bắt buộc benchmark nhiều engine.
+- Khi chọn xong, thêm đúng lệnh setup/render/test vào README; mọi lệnh dưới đây chỉ là **giao diện mong muốn**, chưa có trong repo.
+- Gợi ý giữ nhỏ: `studio.py` hoặc `scripts/` cho bước điều khiển; `scenes/` chứa scene nguồn; `episodes/pilot/` chứa `script.md`, `storyboard.md`, `approvals.md`, `sources.md`; `work/` chứa asset/WAV/MP4/log không đưa lên Git. Nếu engine thực tế thuận tiện hơn với JS, dùng JS; **không viết cả Python và JS coordinator trùng chức năng**.
+- Dùng một cách đặt tên và cấu hình đơn giản nhất, chưa cần JSON Schema, versioned API hoặc manifest phức tạp.
 
-1. Propose actual public-domain work; verify original/translation; prepare source/claim ledger.
-2. Draft Vietnamese summary + analysis; obtain **owner-confirmed script approval** for exact revision.
-3. Obtain owner-authorized, licensed Vietnamese sample TTS; measure durations and generate timing map. If no suitable voice, set `VOICE_PENDING` and block final board approval/render.
-4. Produce shot plan and storyboard proportionate to 60 s using real narration timing; obtain **board approval** bound to script, boards and voice timing.
-5. Render several scenes, audio/SFX, preview 720p; full QA; rerender 1080p from source. Refuse agent-authored/stale approval events.
-6. Export MP4/SRT/thumbnail/metadata/credits/rights/QA only if rights/media gates pass; owner manual upload.
+## 4. Dependency graph (mỗi task một lát cắt kiểm chứng được)
 
-**Checkpoint:** 60-second artifact with demonstrated image/audio sync and cleared assets; failed QA isn't PASS.
+```text
+M01: máy + scene 10–20s chạy được
+  └─ M02: 3 demo phong cách → [BẠN CHỌN STYLE]
+       └─ M03: tác phẩm hết bản quyền + kịch bản → [BẠN DUYỆT SCRIPT]
+            └─ M04: TTS tiếng Việt + đo timing
+                 └─ M05: storyboard + timing → [BẠN DUYỆT BOARD]
+                      └─ M06: bản preview 60s / 720p
+                           └─ M07: final 1080p + SRT/thumbnail/metadata
+                                └─ M08: fix 1 scene + QA + hướng dẫn chạy lại
+```
 
-## Phase 4 — Reliability
+Tài liệu nguồn có thể nghiên cứu song song với demo, nhưng **không sản xuất pilot** trước khi chốt phong cách và hai nội dung cần duyệt.
 
-1. Harden the minimal manifest/approval schema established during the pilot: invalid revision, forged approval, inconsistent TTS timing, crash recovery and negative-path tests.
-2. Render cache keys, crash-resume and bounded retry.
-3. Cost/quota and disk guards; rights gate; cleanup policy dry-run and protected files.
-4. Repeat one-scene rerender and interrupted run; verify no unintended data loss.
+## 5. Checkpoints & bằng chứng
 
-**Checkpoint:** Real resume and targeted rerender proof; user approves cleanup policy.
+- **Sau M01:** có MP4 ngắn 2.5D chạy được trên máy, ffprobe đọc được, ghi công cụ/phiên bản và thời gian render. Nếu không đạt, thử **một** phương án thay thế phù hợp trước khi mở rộng.
+- **Sau M02:** ba file demo + hình tham chiếu + người dùng chọn style. Không cần UI riêng.
+- **Sau M03:** người dùng xác nhận *đúng phiên bản kịch bản*, có nguồn và tình trạng bản quyền rõ.
+- **Sau M04–M05:** có WAV/timing/SRT nháp, storyboard khớp lời kể và bạn duyệt storyboard.
+- **Sau M06:** xem/nghe đầy đủ preview 60 giây, có nhiều scene chuyển động; nếu lỗi thì sửa cảnh lỗi.
+- **Sau M07–M08:** MP4 cuối 1080p/24fps với audio, SRT, thumbnail, metadata, nguồn và QA; dùng ffprobe + xem/nghe hết video; thử render lại đúng một scene.
 
-## Phase 5 — Scaling
+**Không khai báo 'test passed' nếu chưa chạy.** Đọc [task checklist](todo.md), [verification](../docs/verification.md). Không tự merge implementation PR.
 
-Produce 2–3 minute multi-scene sample, then 5-minute chapter, finally 20–30 min episode if benchmarks and visual quality meet threshold. Record measured capacity vs desired ≥1/day. Consider worker service/parallelism **only after** evidence.
+## 6. Rủi ro / cách xử lý tối giản
 
-## Major risks and mitigations
+| Rủi ro | Cách xử lý |
+| --- | --- |
+| Lemo/renderer nặng trên RAM 16 GB | Chỉ 1 worker; thử 10–20s; đổi engine nếu thực sự không chạy được |
+| Không gọi tạo ảnh được từ Codex PC | Dùng ảnh chủ dự án xuất từ ChatGPT hoặc asset/procedural có quyền sử dụng, không giả định API có sẵn |
+| Chưa chọn giọng thuyết minh | Xin duyệt giọng thử; không có thì dừng M04/M05 |
+| Tác phẩm/bản dịch chưa rõ quyền | Dùng bản gốc thuộc phạm vi công cộng và tự viết lời bình tiếng Việt; lưu đường dẫn tham chiếu |
+| Hết hạn mức / cần trả phí | Dừng và báo, không mua quota |
+| Lỗi âm thanh/khung hình | Chỉ sửa/render lại cảnh gặp lỗi, xem lại thành phẩm |
+| Máy đóng Codex PC | Tiếp tục thủ công từ file đã có; không bảo đảm chạy nền |
+| Dọn dữ liệu | Chưa tự động xóa; dọn thủ công sau khi backup file cần thiết |
 
-- Free image limitations: reuse assets, procedural 2.5D where effective, pause on quota.
-- Voice quality/commercial terms: provider adapter, test sample, licensing checkpoint.
-- Copyright: work/translation/license records and per-episode rights gate.
-- RAM/iGPU limitations: start one worker, 720p preview, separate final.
-- Long rendering: scene isolation/cache, no monolithic job.
-- AI-generated inconsistencies: channel bible, recurring refs, scene QA.
-- User approval mismatch: revision digests plus **owner-controlled confirmation**; reject forged/stale events and invalidate on material edits.
-- Private source leakage: local-first processing and destination-specific consent before external AI/TTS/image calls.
+## 7. Sau MVP — backlog riêng (chưa lập task)
 
-## Plan acceptance
+- 2–3 phút → 5 phút → 20–30 phút, đo hiệu năng rồi mới nghĩ tới 1 video/ngày.
+- Duyệt/lên hàng đợi theo lô và chạy 24/7 độc lập.
+- Source/rights registry nâng cao, cache/cleanup tự động, nhiều TTS/engine adapter nếu có nhu cầu thật.
+- YouTube API, dashboard, multi-machine, cloud render.
 
-Every implementation task in [todo.md](todo.md) has dependencies, narrow file scope, measurable acceptance and verification. **Plan approval is distinct from SPEC approval** under gated workflow. No implementation until both approved.
+**Next action:** Review plan PR, rồi chạy **M01**. Không xây các phần trong backlog khi M01–M08 chưa đạt.

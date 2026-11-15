@@ -1,5 +1,7 @@
 # Assumptions, decisions and open issues
 
+> **Update sau khi merge SPEC:** Theo yêu cầu mới nhất, MVP là **3 clip demo 2.5D + 1 pilot 60 giây**. Không cần engine adapter, event-sourcing, protected approval writer, batch queue, database, daemon hay security infrastructure. [MVP plan](../tasks/plan.md) và [task checklist](../tasks/todo.md) là phạm vi triển khai hiện hành; các đề xuất kiến trúc dưới đây là tham khảo dài hạn.
+
 ## Confirmed interview outcomes (grouped; 34 questions)
 
 - **Goal:** original Vietnamese narrative summaries **with analysis**, covering literature/novels and genuine historical events; monetizable YouTube, user manually uploads.
@@ -23,14 +25,14 @@
 - [ ] No app/web service; manifest-based coordination is a proposal, not an existing system.
 - [ ] Target cadence is best-effort; throughput cannot be guaranteed on the reported 16 GB RAM/integrated-GPU machine without benchmark.
 - [ ] Windows version/edition, available RAM, storage letter and free space remain unverified; host survey decides paths rather than presuming `D:`.
-- [ ] Human approval evidence needs a protected owner-operated confirmation mechanism; a JSON flag or unprotected event log cannot enforce the gate.
+- [ ] MVP dùng xác nhận trực tiếp qua Codex PC và ghi ngày/hash trong Markdown; không bảo đảm chống giả mạo, đủ cho workflow một người dùng.
 - [ ] No external provider receives private source material without the owner's explicit destination-specific permission.
 - [ ] Proposed language/CLI structure may change after engine trials. Avoid freezing framework versions prematurely.
 
 ## Architecture decision record ADR-0001 (proposed)
 
 - **Title:** Repo-owned, scene-isolated, engine-neutral video production with Codex PC
-- **Status:** Proposed; awaiting SPEC/plan approval
+- **Status:** Architectural reference; engine-neutral adapters deferred until after MVP
 - **Date:** 2026-11-15
 - **Context:** Long-form illustrated storytelling at near-zero cost, on one Windows workstation, with human approvals.
 - **Decision:** Keep story/scene/rights state in repo-owned versioned manifests. Render each scene via a swappable adapter selected after real tests; preserve scene cache and independent QA. User runs Codex PC; no daemon/dashboard in MVP.

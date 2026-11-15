@@ -1,10 +1,12 @@
 # Architecture v1 — Proposed, not yet implemented
 
+> **MVP override:** [Lean plan](../tasks/plan.md) ưu tiên. Trong pilot 60 giây chỉ dùng **một renderer chạy được + FFmpeg + một runner nhỏ**, không xây adapter tổng quát, manifest/schema framework, queue, DB, daemon, auth hay engine benchmarking suite. Bạn duyệt qua Codex PC, Codex lưu ngày + hash/revision; không cần bảo mật approval phức tạp. Các phần chi tiết dưới đây là định hướng cho sản phẩm video dài.
+
 ## Goals / driving constraints
 
 A solo creator with Codex PC needs consistently high-quality Vietnamese animated storytelling, monetizable rights compliance, resumable scene rendering and near-zero per-video cost on a 16 GiB Windows machine.
 
-**Decision strategy:** compare renderer engines with the **same short benchmark first**, select the supported adapter, then produce three channel-art-style demos; no premature daemon, database or dashboard.
+**Decision strategy for MVP:** một scene 10–20 giây với renderer khả dụng (Lemo-Opuscar chỉ là ứng viên); thử fallback nếu không chạy, rồi 3 demo phong cách. Không xây adapter đa engine.
 
 ## Logical modules
 
@@ -15,24 +17,24 @@ topics+inputs
                └─ Authorized TTS + measured timing ── [VOICE_PENDING if unavailable]
                      └─ Scene/shot planner → Storyboard ── [board approval with hash]
                            └─ Asset resolver / license register
-                                 └─ Engine adapter ── scene render/cache
+                                 └─ Chosen scene renderer ── scene clips
                                        └─ scene QA + bounded retry
                                              └─ final assembly + episode QA
                                                    └─ publish package (manual upload)
 ```
 
-- **Coordinator:** Codex PC uses versioned manifests, does not require a live long-running service for MVP.
+- **Coordinator (MVP):** Codex PC gọi một pipeline cục bộ; trạng thái chỉ cần file Markdown/JSON nhỏ; không service nền.
 - **Content layer:** authoritative source records + evidence for each major claim. Interpretation clearly labeled.
-- **Story layer:** script in Vietnamese; per-scene timing driven by **measured and permitted TTS** before board approval. Approvals are externally owner-confirmed events, not agent-writable flags; plain JSONL alone is not tamper-resistant.
+- **Story layer (MVP):** lời kể tiếng Việt timing đo từ TTS được đồng ý; script/board được user xác nhận trong Codex PC và ghi hash/ngày vào `approvals.md`, không xây ký số/secure writer.
 - **Art layer:** channel style bible with reference assets, camera grammar, palettes, scene-depth layers; asset hashes, licenses, source and generation metadata.
-- **Render layer:** scene adapter with `render(scene, profile) -> artifact + metadata`; 720p review and **fresh** 1080p render from same scene source.
+- **Render layer (MVP):** gọi thẳng một renderer chạy được cho từng scene; preview 720p và render từ nguồn lên 1080p riêng. Adapter framework để sau khi thật sự cần đổi engine.
 - **Audio:** interchangeable Vietnamese TTS provider; voice WAV per segment, music/SFX and ducking, timestamp source of truth.
 - **Assembler:** only consumes validated scene masters; normalizes stream properties before concat/mux; exports full package.
 - **QA:** validates duration, sync, screenshots, missing frames, audio, subtitle legibility, rights and traceability. User approval separate from machine checks.
 
 ## Engine selection spike (not a predetermined choice)
 
-Compare 2–3 feasible candidates, including [Lemo-Opuscar](https://github.com/lemomo-ai/lemo-opuscar), using the same 10–20 s source treatment, audio and target output. Assess:
+Thử một engine trước, ví dụ [Lemo-Opuscar](https://github.com/lemomo-ai/lemo-opuscar); nếu không chạy hoặc không đủ 2.5D thì thử một phương án nhẹ hơn. Không bắt buộc benchmark 2–3 engine. Khi chọn, ghi:
 
 1. **Visual quality:** multilayer 2.5D depth, parallax, continuous cinematic camera, readable faces/text, non-slideshow.
 2. **Agent controllability:** can Codex create/edit frames and scene deterministically without manual GUI dependence?
@@ -60,7 +62,7 @@ IDEA → RESEARCHED → SCRIPT_DRAFT → SCRIPT_APPROVED
                         └─ NEEDS_REVIEW / BLOCKED
 ```
 
-Absent approved/permitted narration, use `VOICE_PENDING` before final board approval. Changes to approved script, board content or materially different voice timing invalidate affected downstream approvals; technical-only repairs do not require unnecessary editorial reapproval. Owner approval proof must originate from an explicit protected human action, outside agent-created files. `BLOCKED_RIGHTS` and `BLOCKED_QUOTA` are safe pauses, never routed to the publish-ready state. Batch approval means separate event for each episode+revision.
+Absent approved/permitted narration, use `VOICE_PENDING` before final board approval. Changes to approved script, board content or materially different voice timing invalidate affected downstream approvals; technical-only repairs do not require unnecessary editorial reapproval. Trong MVP chỉ cần người dùng xác nhận rõ qua Codex PC, ghi lại trong file `approvals.md` và đối chiếu revision; không cần protected event writer. `BLOCKED_RIGHTS` and `BLOCKED_QUOTA` are safe pauses, never routed to the publish-ready state. Batch approval means separate event for each episode+revision.
 
 ## Failure modes / safety
 
