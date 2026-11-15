@@ -42,6 +42,19 @@ ffmpeg -y -v error -ss 6 -i work/m01-valley.mp4 -frames:v 1 -update 1 work/m01-f
 
 Mặc định tạo `work/m01-valley.mp4` dài 12 giây, 1280×720, 24 fps. Có thể dùng `--duration` để chọn thời lượng nguyên từ 10 đến 20 giây. Cảnh tự vẽ gồm năm lớp từ bầu trời đến rặng cây trước máy quay. Mỗi lớp có mức dịch chuyển và zoom riêng. Python truyền lần lượt từng frame cho FFmpeg nên bản render không cần thư mục hàng trăm ảnh trung gian.
 
+## Render ba demo M02
+
+```powershell
+foreach ($style in 'moonlit', 'ink-wash', 'paper-cut') {
+    .\.venv\Scripts\python.exe studio.py --demo $style
+    if ($LASTEXITCODE -ne 0) { break }
+    ffprobe -v error -count_frames -show_entries 'format=duration:stream=codec_name,width,height,r_frame_rate,nb_read_frames' -of json "work/demo-$style.mp4"
+    if ($LASTEXITCODE -ne 0) { break }
+}
+```
+
+Mỗi lệnh tạo một clip 12 giây ở 1280×720, 24 fps. Lữ khách nâng đèn, giữ rồi hạ xuống trong khi khăn bay và nước chuyển động. Xem [ba phương án và trạng thái lựa chọn](style.md).
+
 ## Định hướng kiến trúc
 
 ```text

@@ -58,7 +58,7 @@ def pine(layer, x, y, height, color, seed):
         )
 
 
-def traveler(layer):
+def traveler(layer, static_pose=True):
     layer.ellipse(704, 424, 43, 7, "#0b1d27")
     layer.polygon([(691, 390), (713, 390), (714, 415), (724, 421), (724, 425),
                    (704, 425), (700, 410), (695, 426), (678, 426), (678, 421),
@@ -73,9 +73,11 @@ def traveler(layer):
     layer.polygon([(687, 335), (684, 341), (678, 344), (684, 346), (686, 352),
                    (694, 350), (696, 337)], "#f3a476")
     layer.line([(685, 332), (691, 324), (704, 324)], "#e17a50", 2)
+    layer.ellipse(685, 341, 1.2, 1.2, "#40252b")
+    if not static_pose:
+        return
     layer.polygon([(690, 354), (705, 355), (707, 361), (697, 365), (686, 360),
                    (673, 365), (662, 360), (675, 357)], "#e5a261")
-    layer.ellipse(685, 341, 1.2, 1.2, "#40252b")
     layer.line([(693, 366), (679, 382), (664, 379)], "#f08c59", 5)
     layer.ellipse(663, 378, 3, 3, "#f2b785")
     layer.line([(662, 378), (657, 385), (665, 386), (662, 378)], "#d49c5b", 2)
@@ -85,7 +87,7 @@ def traveler(layer):
     layer.line([(650, 402), (671, 402)], "#452830", 3)
 
 
-def valley(width):
+def valley(width, animated=False):
     scale = width / VIEW[0]
     sky, mountains, lake, ridge, reeds = (Layer(scale) for _ in range(5))
     sky.gradient((20, 32, 65), (129, 107, 141))
@@ -155,7 +157,7 @@ def valley(width):
     ridge.polygon([(535, 478), (655, 453), (598, 476), (556, 483)], "#435763")
     for x, y, h in [(104, 530, 112), (207, 523, 80), (856, 416, 98), (930, 421, 127)]:
         pine(ridge, x, y, h, "#223744", x)
-    traveler(ridge)
+    traveler(ridge, static_pose=not animated)
 
     reeds.polygon([(0, 512), (124, 542), (273, 553), (382, 568), (648, 569),
                    (852, 540), (1056, 509), (1056, 594), (0, 594)], "#101d29")
