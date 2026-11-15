@@ -1,86 +1,125 @@
-# Implementation task list (future work, not yet started)
+# MVP task checklist — 8 task, đi thẳng tới video 60 giây
 
-**Precondition:** SPEC and plan human-approved. Each slice affects ≤5 files. Commands are finalized after toolchain spike. No boxes below are checked.
+**Trạng thái:** /plan, chưa build. SPEC đã merge; yêu cầu người dùng: **tối giản, chạy MVP trước**. Các `studio.py`, `scenes/`, `work/` bên dưới là file **dự kiến**, chưa tồn tại. Mỗi task là một PR/phiên làm việc nhỏ, thường ≤5 file code/tài liệu trọng tâm.
 
-## T01 — Environment and permission survey
-- [ ] Report OS, RAM/free disk, Node/Python/FFmpeg, Codex image access and 0-cost constraints.
-- [ ] No global installations or account charges.
-- **Verify:** Captured command output + machine facts; record versions and workspace.
-- **Depends:** SPEC approval. **Scope:** 1–2 files (survey/report).
+## M01 — Render được một cảnh 2.5D (10–20 giây)
 
-## T02 — Engine spike contract
-- [ ] Define same short scene, demo output + logging/ffprobe and rights/cost scoring across candidates.
-- [ ] Assess Lemo-Opuscar explicitly; benchmark **at least two viable candidates** if available. If a candidate cannot run, record the reason rather than inventing a successful benchmark.
-- **Verify:** reproducible instructions, outputs/logs for each candidate. **Depends:** T01. **Scope:** 3–5 files.
+**Mục tiêu:** Không nghiên cứu dài dòng; kiểm tra Windows/FFmpeg và dùng một renderer phù hợp tạo được video có camera/parallax.
 
-## T03 — Engine decision
-- [ ] Rank actual visual fidelity, controllability, costs, machine load and maintainability.
-- [ ] Owner approves selected engine, pin commit/version.
-- **Verify:** signed-off ADR with video samples/benchmark. **Depends:** T02. **Scope:** 1–2 files.
+**Tiêu chí nghiệm thu:**
+- [ ] Ghi phiên bản runtime/FFmpeg, RAM/ổ trống, engine được chọn, cách chạy và quyền dùng.
+- [ ] Video 10–20 giây 720p có **chuyển động 2.5D thực**, ffprobe nhận đúng video stream; có log thời gian và tài nguyên cơ bản.
+- [ ] Nếu Lemo-Opuscar không thực thi được, mô tả lỗi và thử một phương án đơn giản thay thế; không viết hệ thống adapter.
 
-## T04 — Shared channel/art direction model
-- [ ] Define reusable style/characters/assets contract for 2.5D and three candidate treatments.
-- [ ] Each asset has rights/provenance metadata.
-- **Verify:** validator + sample references. **Depends:** T03. **Scope:** 3–5 files.
+**Kiểm chứng:** Chạy lệnh render thật trên Windows, `ffprobe`, xem clip và lưu 1 ảnh khung hình minh họa.  
+**Phụ thuộc:** Không.  
+**File dự kiến:** một script scene/renderer, cấu hình tối thiểu, README (≤3–5 file).  
+**Điểm dừng:** Chưa có clip chạy thật thì không làm demo hàng loạt.
 
-## T05 — Three animated style demos
-- [ ] Produce three real short MP4 demos with 2.5D parallax/motion; each has preview frames.
-- [ ] Record exact input, render time and quality issues; owner selects one.
-- **Verify:** ffprobe + actual viewing + approval record. **Depends:** T04. **Scope:** separate scenes/tasks of ≤5 files.
+## M02 — Ba demo phong cách và người dùng chọn một
 
-## T06 — Minimal manifest schema, source and claim ledger
-- [ ] Establish minimal versioned episode/source/claim/approval-event contracts needed by the pilot; validate topic/document input and legal status of public-domain original + translation.
-- [ ] Map major claims to primary/reliable references; private inputs remain local absent external-provider consent.
-- **Verify:** schema and path validation tests, rejected untrusted approval records, human source review. **Depends:** T01, T05. **Scope:** 3–5 files.
+**Mục tiêu:** Từ renderer M01, tạo 3 demo khác nhau nhưng cùng một đoạn nội dung/nhân vật để so sánh dễ.
 
-## T07 — Script and trusted owner-approval gate
-- [ ] Write 60 s Vietnamese script with analysis, claim IDs and revision digest.
-- [ ] Implement an explicit owner-confirmation path **separate from automatic Codex writes**, rejecting agent-generated/stale approval; invalidate on script edit.
-- **Verify:** fail-closed tests for unsigned/forged/stale approval, valid owner action and revision invalidation. **Depends:** T06. **Scope:** 3–5 files.
+**Tiêu chí nghiệm thu:**
+- [ ] 3 clip MP4, mỗi clip khoảng 8–15 giây 720p, có parallax/camera và không chỉ trượt ảnh toàn khung.
+- [ ] Có contact sheet/reference và nhận xét chất lượng, thời gian render, nguồn asset.
+- [ ] Người dùng chọn 1 phong cách, lưu lựa chọn trong `style.md`.
 
-## T08 — Vietnamese narration adapter and timing
-- [ ] Produce authorized Vietnamese TTS sample under permitted commercial terms; measure actual per-line duration and draft SRT; consent from owner for provisional voice.
-- [ ] If unavailable, mark `VOICE_PENDING` and do not approve final storyboard; changing voice/timing recomputes shot plan.
-- **Verify:** listen to sample, check timing data and rights, negative test for missing voice. **Depends:** T07. **Scope:** 3–5 files.
+**Kiểm chứng:** ffprobe từng demo; xem 3 clip; xác nhận của người dùng.  
+**Phụ thuộc:** M01.  
+**File dự kiến:** 3 scene/style config hoặc 1 scene + 3 config, `style.md` (≤5 file).  
+**Điểm dừng:** Không tiếp tục sản xuất pilot nếu chưa chốt style.
 
-## T09 — Storyboard and approval gate
-- [ ] Produce proportional pilot boards and detailed scene plan based on approved script **and measured voice timing**.
-- [ ] Explicit owner board approval binds script/board/timing hashes; material changes invalidate it; no production without both approvals.
-- **Verify:** missing/stale/forged approval tests and owner board signoff. **Depends:** T07, T08. **Scope:** 3–5 files.
+## M03 — Chọn tác phẩm, viết script 60 giây và duyệt
 
-## T10 — Scene renderer and cache
-- [ ] Render 2+ independent scenes using chosen engine with versioned inputs.
-- [ ] 720p preview / fresh 1080p/24fps master, atomic validated outputs, cache digest and basic stop/resume.
-- **Verify:** ffprobe, frame samples, changed-input rerender and interrupted run. **Depends:** T05, T08, T09. **Scope:** 3–5 files.
+**Mục tiêu:** Một tác phẩm văn học thuộc phạm vi công cộng, tóm tắt + bình luận nguyên bản bằng tiếng Việt.
 
-## T11 — Audio, assembly and media QA
-- [ ] Mix voice/music/SFX, export subtitle, combine scenes, generate YouTube package.
-- [ ] Check audio intelligibility/sync, video stream, black frames, license state.
-- **Verify:** real 60 s MP4 playback + ffprobe + QA report; block invalid output. **Depends:** T10. **Scope:** 3–5 files.
+**Tiêu chí nghiệm thu:**
+- [ ] Có tên tác phẩm/phiên bản, đường dẫn nguồn, ghi chú quyền **bản gốc và bản dịch riêng**; không tự copy bản dịch còn bản quyền.
+- [ ] `script.md` có lời thuyết minh phù hợp khoảng 60 giây, ý kiến phân tích riêng, nguồn cho các luận điểm quan trọng.
+- [ ] Chủ dự án nói rõ **duyệt script phiên bản này** trong Codex PC; agent ghi ngày và SHA-256 hoặc mã revision đơn giản vào `approvals.md`. Script đổi thì hỏi lại.
 
-## T12 — Retry/recovery
-- [ ] Diagnose and correct defects within bounded attempts, proving interrupted jobs resume without rerendering verified scenes.
-- [ ] Failed or uncertain scenes become `NEEDS_REVIEW`, not PASS.
-- **Verify:** deliberately interrupt, rerun, compare file hashes/logs. **Depends:** T10, T11. **Scope:** 3–5 files.
+**Kiểm chứng:** Người dùng đọc kịch bản; so nguồn; kiểm tra bản được duyệt khớp file hiện tại.  
+**Phụ thuộc:** M02 (có thể nghiên cứu nguồn sớm).  
+**File dự kiến:** `episodes/pilot/script.md`, `sources.md`, `approvals.md` (3 file).  
+**Điểm dừng:** Không sang voice/storyboard bản cuối trước khi script được duyệt.
 
-## T13 — Cleanup and retention
-- [ ] Propose cache TTL/size and obtain approval; implement safe dry-run.
-- [ ] Preserve protected sources, approvals, legal evidence and final masters.
-- **Verify:** fixture-based deletion exclusions, dry-run review, recovery test. **Depends:** T12. **Scope:** 3–5 files.
+## M04 — Giọng kể tiếng Việt, WAV và timing thật
 
-## T14 — Scale experiment and go/no-go
-- [ ] Bench 2–3 min and 5 min, only then plan long-form 20–30 min.
-- [ ] Compare sustained speed with desired ≥1 video/day without sacrificing quality.
-- **Verify:** playable media, benchmarks, explicit human go/no-go. **Depends:** T11–T13. **Scope:** reports/bench scripts ≤5 files each.
+**Mục tiêu:** Lấy giọng phù hợp, không phải xây hệ TTS tổng quát.
 
-## Review checkpoints
+**Tiêu chí nghiệm thu:**
+- [ ] Xác định một TTS tiếng Việt miễn phí/quyền sử dụng sẵn, kiểm tra quyền dùng thương mại và **người dùng đồng ý giọng thử**. Nếu chưa được đồng ý, ghi `VOICE_PENDING` và dừng.
+- [ ] Xuất WAV lời kể, đo thời lượng lời đọc thật; chỉnh script hoặc nhịp nếu cần **và hỏi duyệt lại nếu sửa nội dung**.
+- [ ] Lưu bảng timing đơn giản theo câu/cảnh và SRT nháp dựa trên âm thanh, không ước lượng suông.
 
-- After T03: engine decision approval.
-- After T05: visual style approval.
-- After T07: script approval.
-- After T09: storyboard approval.
-- After T11: pilot QA review.
-- Before T13 destructive cleanup: retention policy approval.
-- Before long-form rollout: benchmark evidence and human go/no-go.
+**Kiểm chứng:** Nghe WAV; ffprobe duration; so transcript/timing/SRT nháp.  
+**Phụ thuộc:** M03.  
+**File dự kiến:** một script TTS/timing, một file timing/SRT nháp, hướng dẫn voice (≤3 file, WAV trong `work/`).  
+**Điểm dừng:** Không có voice hợp lệ thì không dựng video final.
 
-All tasks must satisfy [DoD](../docs/verification.md). Revisit scope rather than marking an unfinished task complete.
+## M05 — Storyboard và lần duyệt thứ hai
+
+**Mục tiêu:** Kế hoạch cảnh dựa trên lời đọc thật và style đã chọn.
+
+**Tiêu chí nghiệm thu:**
+- [ ] Tạo **3–6** storyboard frame đại diện cho pilot 60 giây (quy tắc **12–20 frame** dành cho video dài về sau).
+- [ ] Mỗi cảnh nêu hình ảnh/layer, chuyển động camera, thời điểm bắt đầu/kết thúc và câu voice tương ứng.
+- [ ] Người dùng duyệt storyboard trong Codex PC; ghi ngày và revision/hash của board + script/timing vào `approvals.md`.
+
+**Kiểm chứng:** Xem từng frame; cộng thời lượng các cảnh khớp voice; kiểm tra hash đã duyệt.  
+**Phụ thuộc:** M04.  
+**File dự kiến:** `episodes/pilot/storyboard.md`, file ảnh tham chiếu trong `work/`, cập nhật `approvals.md` (≤3 file theo dõi).  
+**Điểm dừng:** Board chưa duyệt thì không render toàn bộ pilot.
+
+## M06 — Preview 60 giây 720p có đầy đủ lời và nhạc
+
+**Mục tiêu:** Một tuyến hoàn chỉnh từ kịch bản được duyệt → cảnh → lồng tiếng → MP4 preview.
+
+**Tiêu chí nghiệm thu:**
+- [ ] Dựng ít nhất 3 cảnh, có chiều sâu 2.5D/camera chuyển động và chuyển cảnh đúng nhịp kể.
+- [ ] Ghép voice đã duyệt, nhạc/SFX hợp pháp (có thể rất ít nhạc), mix giọng rõ ràng; tạo `preview.mp4` 1280×720/24fps với phụ đề SRT.
+- [ ] Không bị cảnh đen bất ngờ, im tiếng, phụ đề lệch nghiêm trọng; có thể xác định scene gây lỗi.
+
+**Kiểm chứng:** ffprobe preview; **xem/nghe hết 60 giây**, đối chiếu SRT; sửa tối thiểu một lỗi nếu phát hiện.  
+**Phụ thuộc:** M05.  
+**File dự kiến:** render/assemble script, scene configs và SRT (≤3–5 file; media trong `work/`).
+
+## M07 — Video cuối 1080p + gói đăng thủ công
+
+**Mục tiêu:** Tạo bản sản xuất thật, không upscale preview.
+
+**Tiêu chí nghiệm thu:**
+- [ ] Render lại các scene từ nguồn tại **1920×1080/24fps**, ghép MP4 H.264/AAC với giọng rõ, đủ khoảng 60 giây.
+- [ ] Xuất `episode.srt`, `thumbnail.png`, `youtube-metadata.md` (title/description), `credits-and-rights.md` (nguồn tác phẩm, asset, voice, nhạc).
+- [ ] File final đọc được bằng ffprobe; không đánh dấu sẵn sàng nếu có quyền thương mại chưa rõ hoặc chất lượng lỗi.
+
+**Kiểm chứng:** ffprobe độ phân giải/fps/codec; xem/nghe toàn bộ bản final; so SRT và checklist nguồn.  
+**Phụ thuộc:** M06.  
+**File dự kiến:** bổ sung final profile và script export, metadata Markdown (≤3–5 file; output trong `work/`).
+
+## M08 — Sửa đúng một cảnh, chạy lại và bàn giao
+
+**Mục tiêu:** Bằng chứng rằng MVP có thể sửa, không bắt đầu lại từ đầu khi lỗi.
+
+**Tiêu chí nghiệm thu:**
+- [ ] Có lệnh/quy trình render **một scene**, rồi assemble lại mà giữ các scene không đổi (skip theo file/checksum đơn giản).
+- [ ] Khi scene lỗi, ghi nguyên nhân, sửa tối đa vài lượt hợp lý; chưa đạt thì **NEEDS_REVIEW**, không tự nhận PASS.
+- [ ] README có lệnh **thực tế đã chạy** để tái hiện demo, preview, final; kèm kết quả QA và những gì chưa kiểm chứng.
+
+**Kiểm chứng:** Cố ý sửa một scene, render lại, kiểm tra scene còn lại không đổi; phát lại final và đối chiếu ffprobe.  
+**Phụ thuộc:** M07.  
+**File dự kiến:** một thay đổi nhỏ trong render script, README và `qa-notes.md` (≤3 file).
+
+## Checklist Done cho MVP
+
+- [ ] 3 demo chuyển động, user chọn style
+- [ ] 2 lần duyệt script + storyboard, đúng phiên bản
+- [ ] 1 tác phẩm phù hợp quyền thương mại và lời bình nguyên bản
+- [ ] Voice Việt được người dùng đồng ý, có timing thực
+- [ ] 60s preview 720p, final 1080p/24fps **từ nguồn**
+- [ ] MP4/SRT/thumbnail/metadata/credits; không có thanh toán tự động
+- [ ] Phát hết video; ffprobe kiểm tra stream; thử sửa/render lại một scene
+- [ ] Có hướng dẫn tái hiện; không nhận bừa kết quả chưa chạy
+
+Sau đó mới mở backlog cho video 2–3 phút → 5 phút → 20–30 phút. Xem [plan](plan.md).

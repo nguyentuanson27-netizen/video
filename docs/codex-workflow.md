@@ -1,5 +1,7 @@
 # Codex PC operating workflow (proposed)
 
+> **MVP tối giản:** Thực hiện [8 task](../tasks/todo.md) trước. Giữ hai lần duyệt trong Codex PC, ghi `approvals.md` theo revision/hash. Không triển khai secure approval service, queue, daemon hay automation dài hạn trước pilot 60 giây.
+
 ## Important: current reality
 
 This repository is **documentation only**. It has no project CLI or running renderer yet. These are the **expected operator steps after implementation**; don't claim they're currently executable.
@@ -15,7 +17,7 @@ This repository is **documentation only**. It has no project CLI or running rend
 ## Typical creator session
 
 1. Ask Codex to propose topics or supply a title and materials. Record sources and legal status.
-2. Codex writes a sourced outline/script; output for human review. The owner explicitly approves **this exact script revision** through a protected confirmation path, or requests changes. Codex cannot write its own approval proof.
+2. Codex writes a sourced outline/script; output for human review. The owner explicitly approves **this script revision** in Codex PC, or requests changes. Codex writes down the user's decision and revision/hash.
 3. Select an authorized Vietnamese TTS sample with owner consent and **measure actual line durations**. If voice unavailable, keep `VOICE_PENDING`; a preliminary board can be drafted, but final storyboard approval and pilot render remain blocked.
 4. Codex creates a full scene inventory and **12–20 representative boards for a 20–30 min episode** (fewer for a 60-second pilot). The owner approves board revision tied to the script **and voice timing** (single or batch, per-episode hash).
 5. Codex may then select licensed/procedural/generated assets and produce scenes. Rendering remains supervised by Codex PC during MVP; no guaranteed background continuation after it closes.
@@ -36,7 +38,7 @@ This repository is **documentation only**. It has no project CLI or running rend
 
 ## Human approval and private-source boundary
 
-The user must take an explicit action to confirm a displayed revision/hash. A generated chat answer, an agent-edited manifest and a manually typed `APPROVED` flag are not sufficient by themselves. The eventual implementation must choose an owner-controlled confirmation path and test stale/forged records; **none exists yet in this spec-only repo**. Do not start full production until it does.
+Người dùng phải nói rõ `duyệt script bản X` và `duyệt storyboard bản Y` trong Codex PC; Codex ghi ngày + hash/revision vào Markdown, kiểm tra không dùng nhầm bản. Đây là quy trình làm việc đơn giản, **không chống agent giả mạo**. Không cần xây approval service/signature/verification test phức tạp trong MVP.
 
 By default, locally uploaded manuscripts/notes remain local; ask permission before sending their contents to ChatGPT, a cloud TTS/image service or any other external provider. Capture provider name and what will be shared; do not paste private documents into logs or PRs.
 

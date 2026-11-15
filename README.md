@@ -1,6 +1,6 @@
 # AI Video Studio
 
-> **Status: SPEC v1 — documentation only.** Chưa có pipeline chạy được, engine chưa được chọn và chưa có video pilot được kiểm chứng.
+> **Status: SPEC v1 đã merge; kế hoạch MVP tối giản đang review — documentation only.** Chưa có pipeline chạy được, engine chưa được chọn và chưa có video pilot được kiểm chứng.
 
 Hệ thống hỗ trợ **Codex PC trên Windows** sản xuất video YouTube kể chuyện minh họa điện ảnh **2.5D**, dài **20–30 phút**, tóm tắt và phân tích tiểu thuyết/văn học hoặc sự kiện lịch sử. Người dùng duyệt **kịch bản** và **storyboard** trước khi render. AI tạo ra video, thumbnail, phụ đề, tiêu đề/mô tả; **người dùng tự đăng**.
 
@@ -32,7 +32,7 @@ Hệ thống hỗ trợ **Codex PC trên Windows** sản xuất video YouTube k�
 1. Đọc [SPEC v1](docs/spec.md), đặc biệt mục **Open decisions**, và [assumptions](docs/assumptions-and-decisions.md).
 2. Duyệt đặc tả trước khi mở PR implementation.
 3. Cho Codex PC đọc [AGENTS.md](AGENTS.md) và [hướng dẫn vận hành](docs/codex-workflow.md).
-4. Thực hiện [kế hoạch](tasks/plan.md) theo thứ tự và [danh sách task](tasks/todo.md).
+4. Thực hiện [kế hoạch MVP 60 giây (8 task)](tasks/plan.md) và [task checklist](tasks/todo.md). **Không xây DB/queue, engine adapters, secure approval service trước pilot.**
 5. Theo [bộ tiêu chí kiểm chứng](docs/verification.md) và [quy định bản quyền](docs/rights-and-sources.md).
 
 **Chưa có lệnh `install`, `build`, `render` hoặc `test` nào thuộc project hoạt động**. Không chạy lệnh tưởng tượng. Các lệnh benchmark được viết trong plan chỉ là lệnh dự kiến, cần cập nhật sau khi chọn engine và tạo runner.
@@ -43,7 +43,7 @@ Hệ thống hỗ trợ **Codex PC trên Windows** sản xuất video YouTube k�
 User topic / documents
   → research + claim ledger → outline → script → [APPROVAL: SCRIPT]
   → confirmed permitted Vietnamese TTS + measured timings → scene/shot plan
-  → 12–20 representative boards → [APPROVAL: STORYBOARD]
+  → storyboard (pilot 3–6 hình; 12–20 cho video dài) → [APPROVAL: STORYBOARD]
   → asset registry → scene renderer (engine adapter) → QA/retry → per-scene masters
   → episode assembly → final QA → MP4/SRT/thumbnail/metadata/credits
 ```
@@ -74,7 +74,7 @@ runtime/                        # Cache/output cục bộ, gitignored (giai đo�
 - [Rights, fact checking & provenance](docs/rights-and-sources.md)
 - [QA & Definition of Done](docs/verification.md)
 - [Assumptions, decisions & ADR](docs/assumptions-and-decisions.md)
-- [Implementation plan](tasks/plan.md), [task checklist](tasks/todo.md)
+- [Lean MVP /plan — 8 tasks](tasks/plan.md), [task checklist](tasks/todo.md)
 
 ## License
 

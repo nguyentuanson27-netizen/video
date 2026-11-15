@@ -1,6 +1,8 @@
 # Data contracts v1 (proposed)
 
-These are **design contracts**, not existing JSON Schema or implemented API. Validate and version them in an implementation PR. JSON examples are illustrative; no production command loads them yet.
+> **Sau MVP, chỉ để tham khảo.** Đối với pilot 60 giây, **không viết JSON Schema, event-sourcing hoặc approval attestation service**. Dùng các file `episodes/pilot/{script.md,sources.md,storyboard.md,approvals.md}`; trong `approvals.md` ghi user đã duyệt gì trong Codex PC, thời điểm và hash/revision để tránh nhầm bản. Thêm `work/` cho WAV/ảnh/video tạm. Nếu pilot thành công rồi cần queue/multi-episode, mới đánh giá hợp đồng JSON bên dưới. Xem [MVP plan](../tasks/plan.md).
+
+These are **future design contracts**, not existing JSON Schema or implemented API. Do **not** build them as prerequisites for MVP. JSON examples are illustrative; no production command loads them yet.
 
 ## Version and identities
 
@@ -34,7 +36,7 @@ These are **design contracts**, not existing JSON Schema or implemented API. Val
 
 ## Approval events
 
-Design a logically append-only **owner-confirmed** event log, not one mutable `approved: true`. A batch approval operation still records one event per episode, each tied to exact hashes. **Security boundary:** an ordinary JSONL file is editable and can be forged; the implementation must use a protected human-confirmation writer or independently verifiable attestation that the autonomous agent cannot produce. If proof cannot be verified, fail closed and remain unapproved.
+**Future only:** This event structure is an example for batch processing. MVP uses a human-confirmed Markdown checklist plus file hash; it is not tamper-resistant and does not need cryptographic proof or a separate writer.
 
 ```json
 {
@@ -52,7 +54,7 @@ Design a logically append-only **owner-confirmed** event log, not one mutable `a
 }
 ```
 
-`gate` ∈ `SCRIPT | STORYBOARD | RIGHTS`; `decision` ∈ `APPROVED | REJECTED | NEEDS_CHANGES`. A storyboard event must contain **non-null** storyboard and voice-timing hashes and match the currently approved script. `RIGHTS` is a separate review gate; it cannot waive an actual missing commercial-use right. A generated assistant message or agent-created event does not constitute approval. The precise confirmation/attestation mechanism remains to be chosen and tested before implementation.
+`gate` ∈ `SCRIPT | STORYBOARD | RIGHTS`; `decision` ∈ `APPROVED | REJECTED | NEEDS_CHANGES`. A storyboard event must contain **non-null** storyboard and voice-timing hashes and match the currently approved script. `RIGHTS` is a separate review gate; it cannot waive an actual missing commercial-use right. A generated assistant message or agent-created event does not constitute approval. No attestation mechanism is needed for the personal, single-episode MVP; explicit owner confirmation in Codex PC remains required.
 
 ## Source and claim records
 

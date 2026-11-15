@@ -1,6 +1,6 @@
 # SPEC v1 — AI Video Studio
 
-**Status:** Proposed; requires human review/approval before implementation.  
+**Status:** SPEC v1 đã merge vào `main`; MVP tối giản theo [tasks/plan.md](../tasks/plan.md) đang review. Hiện chưa có code chạy.  
 **Date:** 2026-11-15.  
 **Owner/user:** Solo creator operating Codex PC on Windows.
 
@@ -19,7 +19,19 @@ Develop an AI-assisted production workflow for monetizable **Vietnamese narrated
 - User reviews individual episodes or batches via Codex PC; no web dashboard.
 - Upload is **manual**. Pipeline provides publication assets and rights report, never publishes.
 
-## 3. Functional requirements (MUST)
+## 3. Target functional requirements (lộ trình dài hạn)
+
+**MVP profile (ưu tiên hơn các chi tiết dài hạn bên dưới):** Người dùng muốn **chạy được MVP trước, không over-engineer**. Scope chỉ gồm: clip kỹ thuật 10–20 giây → 3 demo style có chuyển động 2.5D → bạn chọn style → một video pilot 60 giây với script/board do bạn duyệt, giọng Việt được phép dùng thử, preview 720p, final 1080p/24fps render từ nguồn, SRT/thumbnail/metadata và rerender được 1 scene. Xem [8 task MVP](../tasks/todo.md).
+
+**Không bắt buộc ở MVP:** queue/batch, background worker, web UI, DB, engine adapter framework, JSON schema, event sourcing, secure approval writer/chữ ký số/auth, tự dọn cache, benchmark nhiều engine hay video dài 20–30 phút. Những mục này là backlog.
+
+**Duyệt tối giản:** hai lần người dùng đồng ý rõ trong Codex PC; Codex ghi ngày và revision/hash vào `episodes/pilot/approvals.md` để tránh nhầm phiên bản; sửa nội dung/timing quan trọng thì xin duyệt lại. Đây là checkpoint làm việc, **không phải** hệ thống chống agent giả mạo. Không cần crypto/audit service cho MVP.
+
+**Giữ giới hạn cơ bản:** không tự trả tiền, không dùng tài liệu/asset mơ hồ bản quyền, không tự upload, không gửi file riêng sang provider khác khi chưa hỏi. Chưa có voice được chấp thuận thì `VOICE_PENDING`, không làm tiếp final board/pilot.
+
+Bảng sau mô tả **đích sản phẩm**, không phải tất cả đều là yêu cầu phải implement trước pilot.
+
+
 
 | ID | Requirement | Observable acceptance |
 | --- | --- | --- |
@@ -50,7 +62,7 @@ Develop an AI-assisted production workflow for monetizable **Vietnamese narrated
 2. After script approval, obtain consent for a voice sample and measure real narration duration. Without an authorized voice, record `VOICE_PENDING` and allow preliminary board drafts only, **not final storyboard approval or pilot render**.
 3. The board approval binds to the **approved script + storyboard + narration timing**. If changing voice alters timings, update the plan and reapprove affected boards; non-semantic rendering corrections do not automatically invalidate editorial approval.
 4. Rights clearance and final media QA are separate checks; neither script nor board approval provides copyright clearance. A creator can manually upload only after the package passes the publication-readiness gate.
-5. Plain JSON/JSONL alone is **not tamper-resistant**. Implementation must isolate/protect the owner-confirmation path from autonomous agent writes and test forged/stale approvals. Until such a path exists, the gate is a design requirement, not an enforced protection.
+5. **MVP:** Không xây secure writer/attestation; người dùng xác nhận trực tiếp trong Codex PC và lưu hash/revision vào file để tránh nhầm, không coi đây là bảo mật chống giả mạo.
 
 ## 4. Non-functional requirements (MUST)
 
@@ -58,7 +70,7 @@ Develop an AI-assisted production workflow for monetizable **Vietnamese narrated
 - **Machine budget:** User-reported Windows PC, Ryzen 5 5500U, integrated AMD GPU, 16 GB RAM. **Exact Windows edition, available RAM, disk letters/free space and installed tools are unverified**; capture them during the host survey. Start with one renderer worker and 720p previews; select storage path from measured free space.
 - **Performance:** report measured render seconds per video minute, peak RSS/RAM, temp/free disk and failures for all engine candidates. No asserted performance target without benchmark.
 - **Reliability:** atomic writes where possible, deterministic per-scene inputs, idempotent reruns, no partial file marked ready, observable transitions/attempt limits.
-- **Security:** sandbox inputs and dependencies, protect secrets, vet downloads, check rights, avoid unattended spend or destructive cleanup.
+- **Minimum safety:** tránh commit secret/file riêng, không tự mua quota, không tự đăng, không xóa file nguồn và không chạy code nhúng trong tài liệu; không làm auth/security infrastructure cho MVP cá nhân.
 - **Consistency:** stable characters/background palette/typography; a versioned channel style bible and asset references used across scenes.
 - **Evidence:** actual outputs with metadata and human checkpoint records, not success prose alone.
 
@@ -68,8 +80,8 @@ Develop an AI-assisted production workflow for monetizable **Vietnamese narrated
 2. **Engine/TTS/visual discovery spike:** install project-scoped dependencies; bench on Windows. Include Lemo-Opuscar as candidate, not presumed winner.
 3. **Three 2.5D style demos:** distinct visual treatments with actual motion; user selects channel style.
 4. **60-second public-domain literature pilot:** documented sources/translation rights; script approval → **authorized voice and measured timings** → board approval → scene render → preview → final master/QA.
-5. **Resumability and retention:** prove rerender-one-scene; smoke resume; no accidental source deletion.
-6. **Scaling experiments:** 2–3 min, 5 min chapter and eventually 20–30 min episode only after quality/performance evidence.
+5. **Basic rerender:** sửa một scene và assemble lại, không tự dọn file nguồn/cache.
+6. **Backlog sau MVP:** 2–3 phút, 5 phút và 20–30 phút nếu video pilot đạt chất lượng và benchmark.
 
 ## 6. Out of scope (MVP)
 
@@ -120,8 +132,8 @@ Use descriptive snake_case for Python, kebab-case for paths, UTC ISO timestamps,
 6. **Retention period:** propose cache TTL and size cap during implementation, human approval before destructive cleanup.
 7. **Release rights/legal:** confirm jurisdiction, source legal status and music/voice commercial terms for each episode. Approval is not legal clearance.
 8. **Engineering toolchain and host:** confirm Windows version, local disk/memory capacity, shell/runtime and dependency versions during spike.
-9. **Approval proof:** choose a real owner-operated confirmation method whose records the autonomous agent cannot forge; document trust limits before writing the approval gate.
+9. **Approval MVP:** dùng xác nhận qua Codex PC + file Markdown/hash; không cần protected writer, chữ ký hay dịch vụ xác thực.
 
 ## 11. Human acceptance of SPEC
 
-This PR is the review gate for SPEC/README/plan. **Merging docs is not approval of engine selection or a claim that tests passed.** Implementation starts only after the user expressly approves SPEC and tasks.
+SPEC đã merge. [Plan MVP](../tasks/plan.md) cần được review trước khi build; việc merge tài liệu không chứng minh đã build, test hoặc render.
