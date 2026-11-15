@@ -6,7 +6,7 @@ These are **design contracts**, not existing JSON Schema or implemented API. Val
 
 - Every manifest declares `schema_version: "1"`, immutable `episode_id`, `revision`, `created_at` UTC.
 - Version/hash the script, boards, style bible, source ledger and renderer input before work starts.
-- Never interpret missing approval fields as approved. Hash includes relevant referenced files.
+- Never interpret missing approval fields as approved. Hash includes relevant referenced files. Workflow/approval status in a manifest is **derived**, never authoritative proof of a human decision.
 - Use file paths relative to allowed episode/workspace root; reject `..`, absolute paths and symlink escapes.
 
 ## Episode manifest example
@@ -22,7 +22,8 @@ These are **design contracts**, not existing JSON Schema or implemented API. Val
   "script": {"path": "script.md", "sha256": "<content-sha256>"},
   "storyboard": {"path": "storyboard.json", "sha256": "<content-sha256>"},
   "style_version": "pending-selection",
-  "approval_state": "BOARD_DRAFT",
+  "workflow_state": "BOARD_DRAFT",
+  "approval_log_path": "approvals/events.jsonl",
   "render_profile": {"preview": "1280x720@24", "final": "1920x1080@24"},
   "scenes": [
     {"id": "s001", "spec_path": "scenes/s001.json", "status": "PENDING"}
@@ -33,7 +34,7 @@ These are **design contracts**, not existing JSON Schema or implemented API. Val
 
 ## Approval events
 
-Store append-only entries, not one mutable `approved: true`. A batch approval operation still writes one event per episode, each tied to exact hashes.
+Design a logically append-only **owner-confirmed** event log, not one mutable `approved: true`. A batch approval operation still records one event per episode, each tied to exact hashes. **Security boundary:** an ordinary JSONL file is editable and can be forged; the implementation must use a protected human-confirmation writer or independently verifiable attestation that the autonomous agent cannot produce. If proof cannot be verified, fail closed and remain unapproved.
 
 ```json
 {
@@ -43,12 +44,15 @@ Store append-only entries, not one mutable `approved: true`. A batch approval op
   "decision": "APPROVED",
   "actor": "human-owner",
   "timestamp_utc": "2026-11-15T12:00:00Z",
-  "revision_sha256": "<script-sha256>",
-  "notes": "Approved via Codex PC"
+  "script_sha256": "<script-sha256>",
+  "storyboard_sha256": null,
+  "voice_timing_sha256": null,
+  "confirmation_method": "owner-interactive-confirmation",
+  "notes": "Owner confirmed displayed digest; example only"
 }
 ```
 
-`gate` ∈ `SCRIPT | STORYBOARD | RIGHTS`; `decision` ∈ `APPROVED | REJECTED | NEEDS_CHANGES`. A generated assistant message does not constitute approval. Approval record must identify its real source; implementation must never fabricate approvals.
+`gate` ∈ `SCRIPT | STORYBOARD | RIGHTS`; `decision` ∈ `APPROVED | REJECTED | NEEDS_CHANGES`. A storyboard event must contain **non-null** storyboard and voice-timing hashes and match the currently approved script. `RIGHTS` is a separate review gate; it cannot waive an actual missing commercial-use right. A generated assistant message or agent-created event does not constitute approval. The precise confirmation/attestation mechanism remains to be chosen and tested before implementation.
 
 ## Source and claim records
 
@@ -94,7 +98,7 @@ Store append-only entries, not one mutable `approved: true`. A batch approval op
 }
 ```
 
-An artifact record includes `scene_id`, `render_profile`, `input_digest`, `output_path`, `sha256`, `ffprobe_metadata`, `qa_status`, `attempt`, `error_reason` if failed. Use an atomic rename to change status from candidate to validated.
+An artifact record includes `scene_id`, `render_profile`, `input_digest`, `output_path`, `sha256`, `ffprobe_metadata`, `qa_status`, `attempt`, `error_reason` if failed, and corrective-action notes when a defect is repaired. Use an atomic rename to change status from candidate to validated.
 
 ## Asset rights/provenance
 

@@ -21,7 +21,10 @@
 - [ ] User says Codex/ChatGPT can generate images; exact local tooling, quotas and commercial rights **unverified**.
 - [ ] Retention TTL, disk limit and deletion rules require explicit approval before any destructive tool.
 - [ ] No app/web service; manifest-based coordination is a proposal, not an existing system.
-- [ ] Target target cadence is best-effort; throughput cannot be guaranteed on 16 GiB/iGPU without benchmark.
+- [ ] Target cadence is best-effort; throughput cannot be guaranteed on the reported 16 GB RAM/integrated-GPU machine without benchmark.
+- [ ] Windows version/edition, available RAM, storage letter and free space remain unverified; host survey decides paths rather than presuming `D:`.
+- [ ] Human approval evidence needs a protected owner-operated confirmation mechanism; a JSON flag or unprotected event log cannot enforce the gate.
+- [ ] No external provider receives private source material without the owner's explicit destination-specific permission.
 - [ ] Proposed language/CLI structure may change after engine trials. Avoid freezing framework versions prematurely.
 
 ## Architecture decision record ADR-0001 (proposed)

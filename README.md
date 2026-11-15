@@ -15,6 +15,7 @@ Hệ thống hỗ trợ **Codex PC trên Windows** sản xuất video YouTube k�
 - **Codex PC** điều phối, không xây web dashboard hay Windows service trong MVP.
 - **Preview 720p**, render cuối **1080p/24 FPS** từ nguồn, không upscale preview.
 - Từng scene có thể kiểm tra, dựng lại độc lập và khôi phục; xóa cache có kiểm soát, không xóa dữ liệu đã duyệt.
+- **Phê duyệt là thao tác thực sự của người dùng**, không phải file JSON do agent tự viết; giọng đọc/timing phải sẵn sàng trước khi khóa storyboard.
 
 ## Trạng thái hiện tại
 
@@ -41,7 +42,8 @@ Hệ thống hỗ trợ **Codex PC trên Windows** sản xuất video YouTube k�
 ```text
 User topic / documents
   → research + claim ledger → outline → script → [APPROVAL: SCRIPT]
-  → voice draft + shot plan → 12–20 representative boards → [APPROVAL: STORYBOARD]
+  → confirmed permitted Vietnamese TTS + measured timings → scene/shot plan
+  → 12–20 representative boards → [APPROVAL: STORYBOARD]
   → asset registry → scene renderer (engine adapter) → QA/retry → per-scene masters
   → episode assembly → final QA → MP4/SRT/thumbnail/metadata/credits
 ```

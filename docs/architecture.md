@@ -4,7 +4,7 @@
 
 A solo creator with Codex PC needs consistently high-quality Vietnamese animated storytelling, monetizable rights compliance, resumable scene rendering and near-zero per-video cost on a 16 GiB Windows machine.
 
-**Decision strategy:** engine-neutral orchestration with one chosen renderer adapter after measured three-demo spike; no premature daemon, database or dashboard.
+**Decision strategy:** compare renderer engines with the **same short benchmark first**, select the supported adapter, then produce three channel-art-style demos; no premature daemon, database or dashboard.
 
 ## Logical modules
 
@@ -12,8 +12,8 @@ A solo creator with Codex PC needs consistently high-quality Vietnamese animated
 topics+inputs
    └─ Research / source registry ── claim ledger
          └─ Script writer ── [script approval with hash]
-               └─ Voice timing draft + scene/shot planner
-                     └─ Storyboard ── [board approval with hash]
+               └─ Authorized TTS + measured timing ── [VOICE_PENDING if unavailable]
+                     └─ Scene/shot planner → Storyboard ── [board approval with hash]
                            └─ Asset resolver / license register
                                  └─ Engine adapter ── scene render/cache
                                        └─ scene QA + bounded retry
@@ -23,7 +23,7 @@ topics+inputs
 
 - **Coordinator:** Codex PC uses versioned manifests, does not require a live long-running service for MVP.
 - **Content layer:** authoritative source records + evidence for each major claim. Interpretation clearly labeled.
-- **Story layer:** script in Vietnamese; per-scene timing driven by actual TTS duration. Approvals are immutable events, never a mutable boolean alone.
+- **Story layer:** script in Vietnamese; per-scene timing driven by **measured and permitted TTS** before board approval. Approvals are externally owner-confirmed events, not agent-writable flags; plain JSONL alone is not tamper-resistant.
 - **Art layer:** channel style bible with reference assets, camera grammar, palettes, scene-depth layers; asset hashes, licenses, source and generation metadata.
 - **Render layer:** scene adapter with `render(scene, profile) -> artifact + metadata`; 720p review and **fresh** 1080p render from same scene source.
 - **Audio:** interchangeable Vietnamese TTS provider; voice WAV per segment, music/SFX and ducking, timestamp source of truth.
@@ -41,7 +41,7 @@ Compare 2–3 feasible candidates, including [Lemo-Opuscar](https://github.com/l
 5. **Licensing and cost:** renderer source code, style guidance, sample assets, output and TTS commercial terms.
 6. **Maintainability:** clear adapter boundary, minimum dependency complexity, stable API/source.
 
-Record sample video paths, measured evidence, machine version and tradeoffs in a proposed ADR; get owner's approval. **Lemo-Opuscar's documented 30–60 s norm and caveat at >2–3 min make per-scene integration an experiment, not proof it scales to 30 min.** Its code, guidance and sample media have different licenses; read its LICENSE at the exact tested commit.
+Record sample video paths, measured evidence, machine version and tradeoffs in a proposed ADR; get owner's approval. **Lemo-Opuscar's [DIRECTOR.md](https://github.com/lemomo-ai/lemo-opuscar/blob/main/DIRECTOR.md) states a 30–60 s target and warns >2–3 min multiplies time/token use**; this supports testing per-scene integration rather than assuming 30 min throughput. Its code, guidance and sample media have different licenses; read its LICENSE at the exact tested commit.
 
 ## Scene contract and boundaries
 
@@ -55,12 +55,12 @@ Record sample video paths, measured evidence, machine version and tradeoffs in a
 
 ```text
 IDEA → RESEARCHED → SCRIPT_DRAFT → SCRIPT_APPROVED
-     → BOARD_DRAFT → BOARD_APPROVED → READY_TO_RENDER
-     → RENDERING → QA → READY_FOR_MANUAL_UPLOAD
+     → VOICE_TIMED → BOARD_DRAFT → BOARD_APPROVED → READY_TO_RENDER
+     → RENDERING → QA → RIGHTS_CHECK → READY_FOR_MANUAL_UPLOAD
                         └─ NEEDS_REVIEW / BLOCKED
 ```
 
-Any edit to approved script or relevant storyboard/asset set invalidates affected downstream approvals. `BLOCKED_RIGHTS` and `BLOCKED_QUOTA` are safe pauses, never routed to the publish-ready state. Batch approval means separate event for each episode+revision.
+Absent approved/permitted narration, use `VOICE_PENDING` before final board approval. Changes to approved script, board content or materially different voice timing invalidate affected downstream approvals; technical-only repairs do not require unnecessary editorial reapproval. Owner approval proof must originate from an explicit protected human action, outside agent-created files. `BLOCKED_RIGHTS` and `BLOCKED_QUOTA` are safe pauses, never routed to the publish-ready state. Batch approval means separate event for each episode+revision.
 
 ## Failure modes / safety
 
@@ -70,7 +70,7 @@ Any edit to approved script or relevant storyboard/asset set invalidates affecte
 - **Renderer crash / machine restart:** use manifest and cache to skip verified scenes; rerender failed only.
 - **Low disk/memory:** fail safe before large job; single worker default until measured.
 - **Inconsistent characters:** style bible + reference sheets; visual review at scene transition level.
-- **Untrusted materials:** local sandbox, limit file input sizes/types, no execution from source materials, strict paths, secrets in env outside git.
+- **Untrusted/private materials:** local sandbox, limit file types/sizes, no execution from source materials, strict paths and outbound URL controls, secrets outside git. Never transmit private user inputs to an external model/provider without explicit permission for that destination; redact confidential contents from logs.
 
 ## Alternatives not selected yet
 

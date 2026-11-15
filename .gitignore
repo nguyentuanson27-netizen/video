@@ -44,8 +44,17 @@ episodes/**/renders/
 episodes/**/frames/
 episodes/**/audio/
 episodes/**/cache/
-episodes/**/sources/private/
+# Default-deny original/source material (including unpublished manuscripts and downloads)
+episodes/**/sources/
 episodes/**/originals/
+episodes/**/storyboards/
+episodes/**/exports/
+*.epub
+*.pdf
+*.docx
+*.sqlite
+*.sqlite3
+*.db
 
 # OS/editor
 .DS_Store
