@@ -1,20 +1,30 @@
 # MVP task checklist — 8 task, đi thẳng tới video 60 giây
 
-**Trạng thái:** /plan, chưa build. SPEC đã merge; yêu cầu người dùng: **tối giản, chạy MVP trước**. Các `studio.py`, `scenes/`, `work/` bên dưới là file **dự kiến**, chưa tồn tại. Mỗi task là một PR/phiên làm việc nhỏ, thường ≤5 file code/tài liệu trọng tâm.
+**Trạng thái:** Tiến độ và bằng chứng kiểm chứng ghi dưới từng task. Các đường dẫn `work/` là output cục bộ. Mỗi task là một PR/phiên làm việc nhỏ, thường ≤5 file code/tài liệu trọng tâm.
 
 ## M01 — Render được một cảnh 2.5D (10–20 giây)
 
 **Mục tiêu:** Không nghiên cứu dài dòng; kiểm tra Windows/FFmpeg và dùng một renderer phù hợp tạo được video có camera/parallax.
 
 **Tiêu chí nghiệm thu:**
-- [ ] Ghi phiên bản runtime/FFmpeg, RAM/ổ trống, engine được chọn, cách chạy và quyền dùng.
-- [ ] Video 10–20 giây 720p có **chuyển động 2.5D thực**, ffprobe nhận đúng video stream; có log thời gian và tài nguyên cơ bản.
-- [ ] Nếu Lemo-Opuscar không thực thi được, mô tả lỗi và thử một phương án đơn giản thay thế; không viết hệ thống adapter.
+- [x] Ghi phiên bản runtime/FFmpeg, RAM/ổ trống, engine được chọn, cách chạy và quyền dùng.
+- [x] Video 10–20 giây 720p có **chuyển động 2.5D thực**, ffprobe nhận đúng video stream; có log thời gian và tài nguyên cơ bản.
+- [x] Nếu Lemo-Opuscar không thực thi được, mô tả lỗi và thử một phương án đơn giản thay thế; không viết hệ thống adapter.
 
 **Kiểm chứng:** Chạy lệnh render thật trên Windows, `ffprobe`, xem clip và lưu 1 ảnh khung hình minh họa.  
 **Phụ thuộc:** Không.  
 **File dự kiến:** một script scene/renderer, cấu hình tối thiểu, README (≤3–5 file).  
 **Điểm dừng:** Chưa có clip chạy thật thì không làm demo hàng loạt.
+
+**Bằng chứng ngày 2026-11-16**
+
+- Máy Windows 11 Home Single Language build 26200, Ryzen 5 5500U, tổng RAM Windows báo 15,35 GiB với 1,61 GiB khả dụng lúc khảo sát. Ổ C: còn 31,21 GiB (chứa repo và output), D: còn 141,67 GiB. PowerShell 7.6.9, Python 3.11.9, Pillow 12.3.0, FFmpeg/ffprobe 8.0.1 Essentials.
+- Renderer chọn Pillow để tổng hợp năm lớp ảnh tự vẽ bằng code và truyền RGB thẳng sang FFmpeg. Một phiên render, libx264 dùng hai luồng. Pillow dùng MIT-CMU, bản FFmpeg cài trên máy dùng GPL v3 trở lên theo `ffmpeg -L`. Repo dùng các công cụ tại chỗ, không phân phối binary, và cảnh thử không dùng ảnh, font hay audio tải về. [Pillow Image](https://pillow.readthedocs.io/en/stable/reference/Image.html), [giấy phép Pillow](https://github.com/python-pillow/Pillow/blob/12.3.0/LICENSE), [FFmpeg rawvideo](https://ffmpeg.org/ffmpeg-formats.html#rawvideo), [giấy phép FFmpeg](https://ffmpeg.org/legal.html).
+- Đã khảo sát Lemo-Opuscar tại `3a7132b`. Máy thiếu lệnh `claude` cho đường dùng chính thức. Tài liệu có hướng dùng cho agent khác nhưng chưa chạy thử. Renderer cục bộ đã đạt clip mục tiêu với các phụ thuộc sẵn có nên chọn dùng cho MVP. [Hướng dẫn Lemo-Opuscar](https://github.com/lemomo-ai/lemo-opuscar/tree/3a7132b996be0241c1ea0ab180d519f06e6f10b6).
+- Môi trường có công cụ tạo ảnh nhưng chưa xác minh quota hay điều khoản tài khoản và chưa gọi tạo ảnh. Đã tìm được ứng viên TTS Việt chạy cục bộ từ tài liệu upstream. Việc nghe mẫu, xác nhận quyền của giọng cụ thể và xin đồng ý thuộc M04. [Giọng Piper vi_VN vais1000](https://huggingface.co/rhasspy/piper-voices/blob/main/vi/vi_VN/vais1000/medium/MODEL_CARD).
+- Chạy `studio.py` theo [README](../README.md). `work/m01-render.log` ghi 46,10 giây render cho 12 giây video (230,5 giây mỗi phút nếu quy đổi từ phép đo này). `work/m01-resources.log` ghi peak working set lấy mẫu của Python 60,5 MiB và FFmpeg 169,3 MiB theo PID. Không ghi frame trung gian ra ổ.
+- `work/m01-probe.json` ghi 288 frame H.264 yuv420p ở 1280×720, 24/1 fps, 12,000 giây, 1.205.392 byte. SHA-256 của MP4 là `0f28b65476a808660f54895a342b196b76c86cb204a2634d0e55dab00aa6f1c6`. FFmpeg giải mã đủ 288 frame và bộ lọc blackdetect không phát hiện đoạn đen. Đã đối chiếu sáu khung liên tiếp mỗi hai giây trong `work/m01-motion.png`: thân cây gần máy dịch nhiều hơn mặt hồ và trăng. Đã sửa viền tròn cứng quanh quầng trăng sau lượt xem đầu và render lại. Khung ở giây 6 lưu tại `work/m01-frame.png`.
+- `ffplay -autoexit -loglevel error work/m01-valley.mp4` chạy hết với SDL dummy driver, mã thoát 0. `pip check` đạt. CLI `--help` chạy được và `--duration 9` bị từ chối với mã thoát 2. Chưa đo bản 1080p hay dựng âm thanh ở M01.
 
 ## M02 — Ba demo phong cách và người dùng chọn một
 

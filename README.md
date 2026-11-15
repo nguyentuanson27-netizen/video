@@ -1,6 +1,6 @@
 # AI Video Studio
 
-> **Status: SPEC v1 đã merge; kế hoạch MVP tối giản đang review — documentation only.** Chưa có pipeline chạy được, engine chưa được chọn và chưa có video pilot được kiểm chứng.
+> **MVP trên Windows.** Xem tiến độ và kết quả render trong [checklist](tasks/todo.md).
 
 Hệ thống hỗ trợ **Codex PC trên Windows** sản xuất video YouTube kể chuyện minh họa điện ảnh **2.5D**, dài **20–30 phút**, tóm tắt và phân tích tiểu thuyết/văn học hoặc sự kiện lịch sử. Người dùng duyệt **kịch bản** và **storyboard** trước khi render. AI tạo ra video, thumbnail, phụ đề, tiêu đề/mô tả; **người dùng tự đăng**.
 
@@ -22,20 +22,25 @@ Hệ thống hỗ trợ **Codex PC trên Windows** sản xuất video YouTube k�
 | Hạng mục | Trạng thái |
 | --- | --- |
 | Phỏng vấn yêu cầu | Đã chốt phần lớn; ghi trong SPEC |
-| Đặc tả, kiến trúc, kế hoạch | Có tài liệu để review |
-| Lựa chọn engine, TTS tiếng Việt, bản sắc kênh | **Chưa xác nhận**, cần benchmark/duyệt |
-| Mã thực thi, CLI sản xuất, tests runtime | **Chưa triển khai** |
-| MP4 pilot hoặc bằng chứng render trên máy Windows | **Chưa có** |
+| Renderer 2.5D | Pillow và FFmpeg |
+| TTS tiếng Việt và bản sắc kênh | Chờ chọn và duyệt |
+| MP4 pilot | Theo các checkpoint trong [checklist](tasks/todo.md) |
 
-## Bắt đầu từ đây
+## Render cảnh kỹ thuật M01
 
-1. Đọc [SPEC v1](docs/spec.md), đặc biệt mục **Open decisions**, và [assumptions](docs/assumptions-and-decisions.md).
-2. Duyệt đặc tả trước khi mở PR implementation.
-3. Cho Codex PC đọc [AGENTS.md](AGENTS.md) và [hướng dẫn vận hành](docs/codex-workflow.md).
-4. Thực hiện [kế hoạch MVP 60 giây (8 task)](tasks/plan.md) và [task checklist](tasks/todo.md). **Không xây DB/queue, engine adapters, secure approval service trước pilot.**
-5. Theo [bộ tiêu chí kiểm chứng](docs/verification.md) và [quy định bản quyền](docs/rights-and-sources.md).
+Chạy từ thư mục repo trong PowerShell trên Windows. Cần Python 3.11+ và `ffmpeg` (có `libx264`) cùng `ffprobe` trên PATH.
 
-**Chưa có lệnh `install`, `build`, `render` hoặc `test` nào thuộc project hoạt động**. Không chạy lệnh tưởng tượng. Các lệnh benchmark được viết trong plan chỉ là lệnh dự kiến, cần cập nhật sau khi chọn engine và tạo runner.
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --only-binary=:all: -r requirements.txt
+.\.venv\Scripts\python.exe studio.py --help
+.\.venv\Scripts\python.exe studio.py
+ffprobe -v error -count_frames -show_entries 'format=duration,size:stream=codec_name,codec_type,width,height,pix_fmt,r_frame_rate,nb_read_frames' -of json work/m01-valley.mp4
+ffmpeg -v info -xerror -i work/m01-valley.mp4 -vf 'blackdetect=d=0.08:pix_th=0.10' -f null NUL
+ffmpeg -y -v error -ss 6 -i work/m01-valley.mp4 -frames:v 1 -update 1 work/m01-frame.png
+```
+
+Mặc định tạo `work/m01-valley.mp4` dài 12 giây, 1280×720, 24 fps. Có thể dùng `--duration` để chọn thời lượng nguyên từ 10 đến 20 giây. Cảnh tự vẽ gồm năm lớp từ bầu trời đến rặng cây trước máy quay. Mỗi lớp có mức dịch chuyển và zoom riêng. Python truyền lần lượt từng frame cho FFmpeg nên bản render không cần thư mục hàng trăm ảnh trung gian.
 
 ## Định hướng kiến trúc
 
@@ -48,7 +53,7 @@ User topic / documents
   → episode assembly → final QA → MP4/SRT/thumbnail/metadata/credits
 ```
 
-Xem [architecture](docs/architecture.md) và [data contracts](docs/data-contracts.md). Lemo-Opuscar là **ứng viên**, không phải engine bắt buộc; benchmark phải có video từ máy thực và log tài nguyên.
+Xem [architecture](docs/architecture.md) và [data contracts](docs/data-contracts.md).
 
 ## Cấu trúc repo dự kiến
 
@@ -56,8 +61,8 @@ Xem [architecture](docs/architecture.md) và [data contracts](docs/data-contract
 AGENTS.md                       # Quy tắc Codex
 docs/                           # SPEC, ADR, vận hành, quyền, verification
 tasks/                          # Plan và task breakdown
-studio.py hoặc scripts/         # Một runner nhỏ (dự kiến; chọn khi build)
-scenes/                         # Nguồn cảnh cho engine đã chọn
+studio.py                       # Runner Pillow / FFmpeg
+scenes/                         # Nguồn cảnh
 episodes/pilot/                 # script.md, storyboard.md, sources.md, approvals.md
 work/                           # WAV/MP4/cache cục bộ, gitignored
 ```
