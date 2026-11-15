@@ -45,7 +45,7 @@ Mặc định tạo `work/m01-valley.mp4` dài 12 giây, 1280×720, 24 fps. Có 
 ## Render ba demo M02
 
 ```powershell
-foreach ($style in 'moonlit', 'ink-print', 'paper-cut') {
+foreach ($style in 'moonlit', 'ink-wash', 'paper-cut') {
     .\.venv\Scripts\python.exe studio.py --demo $style
     if ($LASTEXITCODE -ne 0) { break }
     ffprobe -v error -count_frames -show_entries 'format=duration:stream=codec_name,width,height,r_frame_rate,nb_read_frames' -of json "work/demo-$style.mp4"

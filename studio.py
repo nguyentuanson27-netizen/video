@@ -10,7 +10,7 @@ from time import perf_counter
 
 from PIL import Image
 
-from scenes.styles import STYLES, demo_layers
+from scenes.styles import CAMERAS, MOONLIT_CAMERA, STYLES, demo_layers
 from scenes.valley import VIEW, WORLD
 
 
@@ -18,14 +18,16 @@ FPS = 24
 WORK = Path(__file__).resolve().parent / "work"
 
 
-def frame_at(layers, width, height, progress):
+def frame_at(layers, width, height, progress, camera=MOONLIT_CAMERA):
     scale = width / VIEW[0]
     eased = (1 - math.cos(math.pi * progress)) / 2
+    start, end = camera
+    pan, tilt, push = (a + (b - a) * eased for a, b in zip(start, end))
     frame = Image.new("RGBA", (width, height))
     for depth, image in layers:
-        zoom = 1 + .035 * eased * depth
-        center_x = WORLD[0] / 2 + (-30 + 69 * eased) * depth
-        center_y = WORLD[1] / 2 + (7 - 11 * eased) * depth
+        zoom = 1 + push * depth
+        center_x = WORLD[0] / 2 + pan * depth
+        center_y = WORLD[1] / 2 + tilt * depth
         half_width, half_height = VIEW[0] / (2 * zoom), VIEW[1] / (2 * zoom)
         box = (
             (center_x - half_width) * scale,
@@ -47,6 +49,7 @@ def render(output, duration, style="moonlit"):
     start = perf_counter()
     WORK.mkdir(exist_ok=True)
     layers = demo_layers(width, style)
+    camera = CAMERAS[style]
     # Keep the destination intact until FFmpeg closes a complete MP4.
     with tempfile.TemporaryDirectory(dir=WORK, prefix="render-") as staging:
         temporary = Path(staging) / output.name
@@ -61,7 +64,7 @@ def render(output, duration, style="moonlit"):
             try:
                 with encoder.stdin as pipe:
                     for index in range(frame_count):
-                        frame = frame_at(layers, width, height, index / (frame_count - 1))
+                        frame = frame_at(layers, width, height, index / (frame_count - 1), camera)
                         pipe.write(frame.tobytes())
             except BaseException:
                 encoder.kill()

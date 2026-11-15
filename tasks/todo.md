@@ -40,19 +40,20 @@
 **File dự kiến:** 3 scene/style config hoặc 1 scene + 3 config, `style.md` (≤5 file).  
 **Điểm dừng:** Không tiếp tục sản xuất pilot nếu chưa chốt style.
 
-**Bằng chứng ngày 2026-11-16**
+**Bằng chứng ngày 2026-11-16, demo v2**
 
-- Đã render tuần tự bằng `studio.py --demo <style>` trên máy M01. Mỗi clip có 288 frame H.264 yuv420p ở 1280×720, 24/1 fps, 12,000 giây theo ffprobe.
+- Chủ dự án nhận xét v1 dùng bố cục và hình khối quá giống nhau. V2 giữ cùng khoảnh khắc kể và vẽ lại B và C, mỗi cảnh có hình nhân vật, bố cục, lớp chiều sâu và đường máy quay riêng.
+- Đã render lại cả ba bằng `studio.py --demo <style>` trên máy M01. Mỗi clip có 288 frame H.264 yuv420p ở 1280×720, 24/1 fps, 12,000 giây theo ffprobe.
 
   | Clip cục bộ | Thời gian render | Kích thước |
   | --- | ---: | ---: |
-  | `work/demo-moonlit.mp4` | 34,74 s | 1.205.392 byte |
-  | `work/demo-ink-print.mp4` | 40,84 s | 2.151.387 byte |
-  | `work/demo-paper-cut.mp4` | 37,01 s | 1.658.404 byte |
+  | `work/demo-moonlit.mp4` | 32,91 s | 1.205.392 byte |
+  | `work/demo-ink-wash.mp4` | 34,74 s | 2.280.846 byte |
+  | `work/demo-paper-cut.mp4` | 41,04 s | 1.958.635 byte |
 
-- FFmpeg giải mã đủ 288 frame mỗi clip với `-xerror`. Bộ lọc blackdetect không báo đoạn đen. FFplay với SDL dummy chạy hết cả ba MP4, mã thoát 0. Log theo tên clip trong `work/`.
-- Đối chiếu chín khung trích ở giây 1, 6 và 11 trên `work/m02-contact.png`. Cây trước máy thay đổi vị trí tương đối rõ rệt so với lữ khách, hồ và thiên thể ở xa trong cả ba mẫu. Trong ảnh thử của B có dải màu ngang cứng trên hồ và áo lữ khách khó đọc. Đã bỏ lượng tử hóa tông ở B và thêm màu nhấn cho áo trước khi render MP4 đưa duyệt.
-- Ba tệp MP4 có SHA-256 khác nhau. Mẫu A có SHA-256 trùng bản M01, xác nhận đường render mặc định giữ nguyên đầu ra. `--demo invalid` trả mã thoát 2.
+- FFmpeg giải mã đủ 288 frame mỗi clip với `-xerror`. Bộ lọc blackdetect không báo đoạn đen. FFplay với SDL dummy chạy hết cả ba MP4, mã thoát 0. Log và JSON ffprobe có tiền tố `m02-v2-` trong `work/`.
+- Đối chiếu chín khung trích ở giây 1, 6 và 11 trên `work/m02-v2-contact.png`. Ở A, cây thông gần máy dịch nhiều hơn mặt trăng. Ở B, thân cây dần hiện ra bên trái trong khi mặt trời gần như đứng yên. Ở C, cầu và lá tiền cảnh nở lớn rõ hơn các lớp đồi xa. Từ ảnh thử, đã làm mềm chân núi B để hòa vào mặt hồ và chỉnh cầu C nối tới hai bờ trước lượt render cuối.
+- Ba tệp MP4 có SHA-256 khác nhau. Mẫu A có SHA-256 trùng bản M01. `--demo invalid` trả mã thoát 2, `compileall` và `pip check` đạt.
 - [style.md](../style.md) ghi nguồn hình tự vẽ, nhận xét từng phương án và trạng thái chờ chủ dự án chọn A, B hoặc C.
 
 ## M03 — Chọn tác phẩm, viết script 60 giây và duyệt
