@@ -1,7 +1,7 @@
 """Three original illustrations of a lantern bearer overlooking a lake."""
 
 from itertools import pairwise
-from math import cos, pi, sin
+from math import cos, pi, radians, sin, tau
 from random import Random
 
 from PIL import Image, ImageChops, ImageFilter, ImageOps
@@ -16,6 +16,80 @@ CAMERAS = {
     "paper-cut": ((-5, 1, 0), (10, -14, .124)),
 }
 STYLES = tuple(CAMERAS)
+
+
+def animated_layer(scale, paint):
+    """Reuse the transparent drawing surface for a layer that changes each frame."""
+    layer = Layer(scale)
+
+    def draw_frame(progress):
+        layer.image.paste((0, 0, 0, 0), (0, 0, *layer.image.size))
+        paint(layer, progress)
+        return layer.image
+
+    return draw_frame
+
+
+def ease(value):
+    value = max(0, min(1, value))
+    return value * value * (3 - 2 * value)
+
+
+def moving_traveler(scale, shoulder, neck, facing, *, sleeve, scarf, trim, hand):
+    def draw(layer, progress):
+        lift = ease((progress - .12) / .32) - .92 * ease((progress - .61) / .31)
+        t = tau * progress
+        x, y = shoulder
+        upper = radians(52 - 99 * lift)
+        lower = radians(9 - 45 * lift + 3 * sin(3 * t))
+        elbow = (x + facing * 23 * cos(upper), y + 23 * sin(upper))
+        palm_x = elbow[0] + facing * 21 * cos(lower)
+        palm_y = elbow[1] + 21 * sin(lower)
+        lamp_x = palm_x + 2.6 * sin(4 * t - .5)
+        lamp_y = palm_y + 15
+        flame = .5 + .28 * sin(19 * t) + .21 * sin(27 * t)
+
+        # The held lantern swings at the handle and lights a small area around the hand.
+        for ring in range(16, 0, -1):
+            layer.ellipse(lamp_x, lamp_y, ring * 1.9, ring * 1.6,
+                          (255, 181, 82, round((59 + 19 * flame) * (1 - ring / 17) ** 2)))
+        knot_x, knot_y = neck
+        ribbon = [(knot_x - facing * 7, knot_y), (knot_x, knot_y + 1)]
+        for step in range(1, 17):
+            fraction = step / 16
+            ribbon.append((knot_x - facing * 44 * fraction,
+                           knot_y + 5 * fraction + 11 * fraction * sin(3.1 * t - 4.7 * fraction)))
+        lower_edge = [(px, py + 6 - 4 * index / len(ribbon))
+                      for index, (px, py) in enumerate(ribbon)]
+        layer.polygon([*ribbon, *reversed(lower_edge)], scarf)
+        layer.line([shoulder, elbow, (palm_x, palm_y)], trim, 9)
+        layer.line([shoulder, elbow, (palm_x, palm_y)], sleeve, 6)
+        layer.ellipse(palm_x, palm_y, 3.7, 3.7, hand)
+        layer.line([(palm_x, palm_y + 2), (lamp_x - 5, lamp_y - 7),
+                    (lamp_x + 5, lamp_y - 7), (palm_x, palm_y + 2)], trim, 1.8)
+        layer.polygon([(lamp_x - 7, lamp_y - 7), (lamp_x + 7, lamp_y - 7),
+                       (lamp_x + 8, lamp_y + 11), (lamp_x - 8, lamp_y + 11)], trim)
+        layer.polygon([(lamp_x - 5, lamp_y - 5), (lamp_x + 5, lamp_y - 5),
+                       (lamp_x + 5, lamp_y + 8), (lamp_x - 5, lamp_y + 8)], "#ffbf60")
+        layer.ellipse(lamp_x + .8 * sin(17 * t), lamp_y + 4, 2.4, 3.6 + 2 * flame, "#fff2ac")
+
+    return animated_layer(scale, draw)
+
+
+def moving_reflections(scale, center, top, bottom, tone, spread, opacity):
+    rng = Random(402)
+    marks = [(rng.gauss(center, spread), rng.uniform(top, bottom), rng.uniform(5, 30),
+              rng.uniform(0, tau)) for _ in range(48)]
+
+    def draw(layer, progress):
+        for x, y, length, phase in marks:
+            angle = tau * 4 * progress + phase
+            swell = .5 + .5 * sin(angle)
+            drift = x + 13 * sin(angle * .5)
+            layer.line([(drift, y), (drift + length * (.55 + swell), y)],
+                       (*tone, round(opacity * swell)), 1.1)
+
+    return animated_layer(scale, draw)
 
 
 def curve(*knots):
@@ -104,11 +178,6 @@ def ink_wash(scale):
                         (297, 330), (285, 344)), "#8d3d33")
     shore.polygon([(294, 317), (306, 324), (299, 329), (297, 334), (286, 337),
                    (289, 324)], "#d8a189")
-    shore.line(curve((301, 339), (283, 338), (268, 346), (249, 340)), "#c07659", 4)
-    shore.line(curve((291, 346), (304, 361), (322, 354)), "#793b32", 6)
-    shore.line([(322, 354), (323, 365)], "#39423a", 2)
-    shore.polygon([(318, 363), (329, 363), (331, 380), (316, 380)], "#876038")
-    shore.polygon([(320, 365), (327, 365), (328, 377), (318, 377)], "#f7cc80")
 
     for knots, width in [
         (((1, 595), (38, 365), (64, 217), (36, 73), (11, -15)), 26),
@@ -128,8 +197,12 @@ def ink_wash(scale):
             branch.line([(x, y), (x + rng.uniform(1, 6), y - 1)],
                         rng.choice([(35, 52, 47, 220), (45, 65, 56, 176), (68, 83, 69, 133)]),
                         rng.uniform(.55, 2.2))
+    ripples = moving_reflections(scale, 585, 368, 543, (68, 98, 90), 163, 90)
+    gesture = moving_traveler(scale, (291, 347), (288, 338), 1, sleeve="#a7493d",
+                               scarf="#c78665", trim="#603d38", hand="#dba78b")
     return [(0.08, paper.image), (0.20, mist.image.filter(ImageFilter.GaussianBlur(4 * scale))),
-            (0.35, rocks.image), (0.72, shore.image), (1.28, branch.image)]
+            (0.35, rocks.image), (0.35, ripples), (0.72, shore.image), (0.72, gesture),
+            (1.28, branch.image)]
 
 
 def cardstock(layer, color):
@@ -150,11 +223,24 @@ def cardstock(layer, color):
     return sheet
 
 
-def cut_wave(layer, waterline, height, period, color):
-    crest = [(x, waterline + height * sin(2 * pi * x / period))
+def cut_wave(layer, waterline, height, period, color, phase=0):
+    crest = [(x, waterline + height * sin(tau * x / period + phase))
              for x in range(-12, WORLD[0] + 21, 4)]
     layer.polygon([*crest, (1068, 606), (-12, 606)], color)
     layer.line(crest, "#b2e2d7", 1.3)
+
+
+def rolling_water(layer, progress):
+    drift = -tau * 1.42 * progress
+    cut_wave(layer, 423, 15, 230, "#66bbb2", drift)
+    cut_wave(layer, 466, 17, 244, "#399990", drift * 1.24)
+    cut_wave(layer, 519, 19, 275, "#257374", drift * 1.56)
+    for x, y, length in [(105, 444, 77), (801, 448, 79), (395, 481, 88),
+                          (662, 485, 71), (230, 495, 83), (805, 546, 94),
+                          (37, 543, 114), (591, 552, 63)]:
+        x += 19 * sin(drift + y / 84)
+        y += 3 * cos(drift + x / 156)
+        layer.line([(x, y), (x + length * .4, y - 3), (x + length, y)], "#a7dbca", 2.5)
 
 
 def paper_cut(scale):
@@ -190,14 +276,6 @@ def paper_cut(scale):
     hills.line(fold, "#ba8da8", 2)
 
     cut_wave(water, 380, 15, 195, "#3c9491")
-    cut_wave(water, 423, 15, 230, "#66bbb2")
-    cut_wave(water, 466, 17, 244, "#399990")
-    cut_wave(water, 519, 19, 275, "#257374")
-    for x, y, length in [(105, 403, 77), (801, 407, 79), (395, 450, 88),
-                          (662, 478, 71), (230, 495, 83), (805, 531, 94),
-                          (37, 518, 114), (591, 545, 63)]:
-        water.line(curve((x, y), (x + length * .4, y - 4), (x + length, y)),
-                   "#a7dbca", 2.5)
 
     left_bank = curve((-12, 421), (106, 433), (190, 457), (281, 492), (326, 539), (281, 608))
     right_bank = curve((1068, 390), (956, 420), (878, 465), (817, 500), (793, 607))
@@ -228,12 +306,6 @@ def paper_cut(scale):
                          (563, 299), (564, 312), (550, 322)), "#b3485a")
     bridge.ellipse(549, 308, 11, 13, "#ffd097")
     bridge.ellipse(555, 307, 1.6, 1.6, "#57364e")
-    bridge.line(curve((550, 324), (533, 323), (517, 329), (500, 322)), "#f4bb66", 6)
-    bridge.line(curve((545, 338), (559, 351), (578, 339)), "#9b4661", 8)
-    bridge.ellipse(579, 338, 4, 4, "#ffc890")
-    bridge.line([(579, 340), (584, 349), (574, 349), (579, 340)], "#5e4664", 2.5)
-    bridge.polygon([(572, 349), (587, 349), (589, 369), (569, 369)], "#704b62")
-    bridge.polygon([(575, 352), (584, 352), (585, 366), (573, 366)], "#ffdc73")
 
     for x, y, reach, bend, color in [
         (50, 602, 365, 8, "#3b345a"), (89, 602, 253, 87, "#66517b"),
@@ -250,9 +322,12 @@ def paper_cut(scale):
                          tip, (leaf_x + sign * size * .68, leaf_y - size * .20))
             reeds.polygon(leaf, color)
             reeds.line([(leaf_x, leaf_y), tip], "#c1919a", 1)
+    gesture = moving_traveler(scale, (545, 338), (540, 324), 1, sleeve="#ca5963",
+                               scarf="#f4bb66", trim="#85405c", hand="#ffc890")
     return [(0.06, board.image), (0.18, cardstock(hills, "#674d7b")),
-            (0.35, cardstock(water, "#277470")), (0.56, cardstock(bank, "#2e2a4e")),
-            (0.73, cardstock(bridge, "#996475")), (1.22, cardstock(reeds, "#32243e"))]
+            (0.35, cardstock(water, "#277470")), (0.35, animated_layer(scale, rolling_water)),
+            (0.56, cardstock(bank, "#2e2a4e")), (0.73, cardstock(bridge, "#996475")),
+            (0.73, gesture), (1.22, cardstock(reeds, "#32243e"))]
 
 
 def demo_layers(width, style):
@@ -261,4 +336,8 @@ def demo_layers(width, style):
         return ink_wash(scale)
     if style == "paper-cut":
         return paper_cut(scale)
-    return valley(width)
+    sky, mountains, lake, ridge, reeds = valley(width, animated=True)
+    ripples = moving_reflections(scale, 420, 335, 465, (246, 207, 139), 34, 163)
+    gesture = moving_traveler(scale, (696, 365), (697, 357), -1, sleeve="#d17154",
+                               scarf="#e5a261", trim="#6d3733", hand="#f2b785")
+    return [sky, mountains, lake, (lake[0], ripples), ridge, (ridge[0], gesture), reeds]

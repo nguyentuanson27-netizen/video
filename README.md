@@ -53,7 +53,7 @@ foreach ($style in 'moonlit', 'ink-wash', 'paper-cut') {
 }
 ```
 
-Mỗi lệnh tạo một clip 12 giây ở 1280×720, 24 fps. Xem [ba phương án và trạng thái lựa chọn](style.md).
+Mỗi lệnh tạo một clip 12 giây ở 1280×720, 24 fps. Lữ khách nâng đèn, giữ rồi hạ xuống trong khi khăn bay và nước chuyển động. Xem [ba phương án và trạng thái lựa chọn](style.md).
 
 ## Định hướng kiến trúc
 

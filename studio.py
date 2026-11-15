@@ -11,7 +11,7 @@ from time import perf_counter
 from PIL import Image
 
 from scenes.styles import CAMERAS, MOONLIT_CAMERA, STYLES, demo_layers
-from scenes.valley import VIEW, WORLD
+from scenes.valley import VIEW, WORLD, valley
 
 
 FPS = 24
@@ -24,7 +24,8 @@ def frame_at(layers, width, height, progress, camera=MOONLIT_CAMERA):
     start, end = camera
     pan, tilt, push = (a + (b - a) * eased for a, b in zip(start, end))
     frame = Image.new("RGBA", (width, height))
-    for depth, image in layers:
+    for depth, layer in layers:
+        image = layer(progress) if callable(layer) else layer
         zoom = 1 + push * depth
         center_x = WORLD[0] / 2 + pan * depth
         center_y = WORLD[1] / 2 + tilt * depth
@@ -39,7 +40,7 @@ def frame_at(layers, width, height, progress, camera=MOONLIT_CAMERA):
     return frame.convert("RGB")
 
 
-def render(output, duration, style="moonlit"):
+def render(output, duration, style=None):
     ffmpeg = shutil.which("ffmpeg")
     if ffmpeg is None:
         raise OSError("ffmpeg must be on PATH")
@@ -48,8 +49,8 @@ def render(output, duration, style="moonlit"):
     frame_count = FPS * duration
     start = perf_counter()
     WORK.mkdir(exist_ok=True)
-    layers = demo_layers(width, style)
-    camera = CAMERAS[style]
+    layers = demo_layers(width, style) if style else valley(width)
+    camera = CAMERAS[style] if style else MOONLIT_CAMERA
     # Keep the destination intact until FFmpeg closes a complete MP4.
     with tempfile.TemporaryDirectory(dir=WORK, prefix="render-") as staging:
         temporary = Path(staging) / output.name

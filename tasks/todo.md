@@ -40,20 +40,21 @@
 **File dự kiến:** 3 scene/style config hoặc 1 scene + 3 config, `style.md` (≤5 file).  
 **Điểm dừng:** Không tiếp tục sản xuất pilot nếu chưa chốt style.
 
-**Bằng chứng ngày 2026-11-16, demo v2**
+**Bằng chứng ngày 2026-11-16, demo v3**
 
-- Chủ dự án nhận xét v1 dùng bố cục và hình khối quá giống nhau. V2 giữ cùng khoảnh khắc kể và vẽ lại B và C, mỗi cảnh có hình nhân vật, bố cục, lớp chiều sâu và đường máy quay riêng.
+- Theo góp ý của chủ dự án, B và C đã được vẽ lại với bố cục riêng ở v2. V3 bổ sung động tác nâng, giữ và hạ đèn, khăn bay, lửa chập chờn và chuyển động mặt nước cho cả ba phong cách.
+- Khóa camera khi render thử ở 640×360. Tâm ngọn lửa đi lên 34,5 pixel rồi xuống 30,5 pixel ở cả ba. Vùng nhân vật thay đổi 1.369/1.339 pixel ở A, 839/845 ở B và 964/906 ở C ở hai nhịp. Vùng mặt nước thay đổi tương ứng 596, 398 và 2.571 pixel khi nâng đèn. Vùng trời đối chứng giữ nguyên. Ngưỡng đếm là sai khác độ sáng ít nhất 5 trên 255. Xem GIF cận cảnh `work/m02-v3-fixed-camera.gif` và log `work/m02-v3-fixed-camera.log`, `work/m02-v3-lantern-height.log`.
 - Đã render lại cả ba bằng `studio.py --demo <style>` trên máy M01. Mỗi clip có 288 frame H.264 yuv420p ở 1280×720, 24/1 fps, 12,000 giây theo ffprobe.
 
   | Clip cục bộ | Thời gian render | Kích thước |
   | --- | ---: | ---: |
-  | `work/demo-moonlit.mp4` | 32,91 s | 1.205.392 byte |
-  | `work/demo-ink-wash.mp4` | 34,74 s | 2.280.846 byte |
-  | `work/demo-paper-cut.mp4` | 41,04 s | 1.958.635 byte |
+  | `work/demo-moonlit.mp4` | 89,87 s | 1.318.118 byte |
+  | `work/demo-ink-wash.mp4` | 90,80 s | 2.392.985 byte |
+  | `work/demo-paper-cut.mp4` | 105,39 s | 2.250.106 byte |
 
-- FFmpeg giải mã đủ 288 frame mỗi clip với `-xerror`. Bộ lọc blackdetect không báo đoạn đen. FFplay với SDL dummy chạy hết cả ba MP4, mã thoát 0. Log và JSON ffprobe có tiền tố `m02-v2-` trong `work/`.
-- Đối chiếu chín khung trích ở giây 1, 6 và 11 trên `work/m02-v2-contact.png`. Ở A, cây thông gần máy dịch nhiều hơn mặt trăng. Ở B, thân cây dần hiện ra bên trái trong khi mặt trời gần như đứng yên. Ở C, cầu và lá tiền cảnh nở lớn rõ hơn các lớp đồi xa. Từ ảnh thử, đã làm mềm chân núi B để hòa vào mặt hồ và chỉnh cầu C nối tới hai bờ trước lượt render cuối.
-- Ba tệp MP4 có SHA-256 khác nhau. Mẫu A có SHA-256 trùng bản M01. `--demo invalid` trả mã thoát 2, `compileall` và `pip check` đạt.
+- FFmpeg giải mã đủ 288 frame mỗi clip với `-xerror`. Bộ lọc blackdetect không báo đoạn đen. FFplay với SDL dummy chạy hết cả ba MP4, mã thoát 0. Log và JSON ffprobe có tiền tố `m02-v3-` trong `work/`.
+- Đã xem chín khung trích ở giây 1, 6 và 11 trên `work/m02-v3-contact.png`. Cả ba giữ parallax giữa các lớp và thể hiện tư thế cầm đèn thấp, giơ cao, rồi hạ xuống. Sóng cảnh C thay đổi đường viền ở mỗi mốc.
+- Ba tệp MP4 có SHA-256 khác nhau. Đã render lại cảnh kỹ thuật bằng `studio.py` và so SHA-256 trùng bản M01. `--demo invalid` trả mã thoát 2, `compileall` và `pip check` đạt.
 - [style.md](../style.md) ghi nguồn hình tự vẽ, nhận xét từng phương án và trạng thái chờ chủ dự án chọn A, B hoặc C.
 
 ## M03 — Chọn tác phẩm, viết script 60 giây và duyệt
