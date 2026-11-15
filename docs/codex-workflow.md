@@ -19,7 +19,7 @@ This repository is **documentation only**. It has no project CLI or running rend
 1. Ask Codex to propose topics or supply a title and materials. Record sources and legal status.
 2. Codex writes a sourced outline/script; output for human review. The owner explicitly approves **this script revision** in Codex PC, or requests changes. Codex writes down the user's decision and revision/hash.
 3. Select an authorized Vietnamese TTS sample with owner consent and **measure actual line durations**. If voice unavailable, keep `VOICE_PENDING`; a preliminary board can be drafted, but final storyboard approval and pilot render remain blocked.
-4. Codex creates a full scene inventory and **12–20 representative boards for a 20–30 min episode** (fewer for a 60-second pilot). The owner approves board revision tied to the script **and voice timing** (single or batch, per-episode hash).
+4. Codex tạo **3–6 khung storyboard cho pilot 60 giây**, kèm scene inventory và thời điểm theo voice; video 20–30 phút mới cần 12–20 khung. The owner approves board revision tied to the script **and voice timing** (single or batch, per-episode hash).
 5. Codex may then select licensed/procedural/generated assets and produce scenes. Rendering remains supervised by Codex PC during MVP; no guaranteed background continuation after it closes.
 6. Review 720p preview and QA report. Diagnose/correct defective scene(s) within bounded attempts; after QA, generate fresh 1080p/24 fps final master.
 7. Export `episode.mp4`, `episode.srt`, `thumbnail.png`, `youtube-metadata.md`, `CREDITS.md`, `rights-report.md`, `qa-report.md` only when rights and media checks pass.

@@ -49,8 +49,8 @@ Bảng sau mô tả **đích sản phẩm**, không phải tất cả đều là
 | FR-12 | Preview/final | Preview **1280×720**; final **1920×1080, 24 fps**, rerender from source; MP4 H.264/AAC target, SRT, thumbnail, title, description, credits |
 | FR-13 | Quality control | ffprobe duration/resolution/codec and frame/audio/subtitle/rights checks; classify defects, attempt bounded **corrective changes and rerenders** (not blind retry), then `NEEDS_REVIEW` |
 | FR-14 | Copyright and publish gate | A rights report shows work/translation/source/media licenses, conflicts and human review needs; unresolved conflicts block publish-ready |
-| FR-15 | Storage and cleanup | Raw/source/approvals protected; bounded cache retention; dry-run cleanup and recovery plan |
-| FR-16 | Batch approval / queue | Multiple episodes can await approvals; only revision-matching approved episodes enter full render queue |
+| FR-15 | Storage and cleanup | MVP giữ file cục bộ, không tự xóa; retention tự động và cleanup CLI chỉ khi đã cần sau pilot |
+| FR-16 | Batch approval / queue | **Backlog:** trong MVP chỉ một episode, hai lần duyệt trong Codex PC; batch queue làm sau |
 | FR-17 | No unapproved expense | No new subscription, usage-billed API call, purchase or other charge without explicit human approval; use existing free/entitled quota only within verified terms; exhaustion → pause + report |
 | FR-18 | User manual publishing | Export YouTube-ready artifacts; no YouTube API/upload |
 | FR-19 | AI engine evaluation | Same acceptance test on candidates; decide engine by actual 2.5D demo and resource evidence, not popularity |
@@ -96,11 +96,10 @@ Bảng sau mô tả **đích sản phẩm**, không phải tất cả đều là
 
 ```
 AGENTS.md  README.md  docs/  tasks/
-schemas/episode.schema.json
-pipeline/{research,script,storyboard,voice,assets,render,verify,assemble}.py
-tests/{unit,contract,integration}/
-episodes/<slug>/{manifest.json,script.md,claims.json,storyboard.json,approvals/events.jsonl}
-runtime/{cache,assets,renders,logs}/  # ignored, local
+studio.py or scripts/  # one tiny runner, if useful
+scenes/                # scene source of chosen renderer
+episodes/pilot/{script.md,sources.md,storyboard.md,approvals.md}
+work/                  # local media/cache (ignored)
 ```
 
 **Not implemented yet.** Language and runner interfaces are provisional, to be selected in engine spike. No framework/dependency pinned in SPEC.
@@ -117,7 +116,7 @@ Use descriptive snake_case for Python, kebab-case for paths, UTC ISO timestamps,
 
 - Unit: schema, duration arithmetic, hash invalidation, state transitions, cache key, bounded retry, cleanup selection.
 - Contract: renderer/TTS adapter input-output, rights records, ffprobe metadata parse, asset provenance.
-- Integration: generate two small scenes, stop/resume, reject forged/stale approval event, change script or material voice timings invalidates affected approval, render only approved revision, deterministic partial rerender.
+- Integration (MVP): render nhiều scene, kiểm tra script/board/timing có đúng revision được user duyệt, sửa một scene rồi assemble lại. Test chống giả mạo/queue/khôi phục phức tạp để sau.
 - Media: human review of sampled frames, transitions, audible narration and captions; full playback of pilot at final resolution.
 - Rights/security: malformed uploads, path traversal, missing credentials, unknown license, unavailable free quota, invalid source URL → safe failure.
 - All implementation work subject to [verification](verification.md) and the project Definition of Done.

@@ -17,7 +17,7 @@ topics+inputs
                └─ Authorized TTS + measured timing ── [VOICE_PENDING if unavailable]
                      └─ Scene/shot planner → Storyboard ── [board approval with hash]
                            └─ Asset resolver / license register
-                                 └─ Engine adapter ── scene render/cache
+                                 └─ Chosen scene renderer ── scene clips
                                        └─ scene QA + bounded retry
                                              └─ final assembly + episode QA
                                                    └─ publish package (manual upload)
@@ -27,7 +27,7 @@ topics+inputs
 - **Content layer:** authoritative source records + evidence for each major claim. Interpretation clearly labeled.
 - **Story layer (MVP):** lời kể tiếng Việt timing đo từ TTS được đồng ý; script/board được user xác nhận trong Codex PC và ghi hash/ngày vào `approvals.md`, không xây ký số/secure writer.
 - **Art layer:** channel style bible with reference assets, camera grammar, palettes, scene-depth layers; asset hashes, licenses, source and generation metadata.
-- **Render layer:** scene adapter with `render(scene, profile) -> artifact + metadata`; 720p review and **fresh** 1080p render from same scene source.
+- **Render layer (MVP):** gọi thẳng một renderer chạy được cho từng scene; preview 720p và render từ nguồn lên 1080p riêng. Adapter framework để sau khi thật sự cần đổi engine.
 - **Audio:** interchangeable Vietnamese TTS provider; voice WAV per segment, music/SFX and ducking, timestamp source of truth.
 - **Assembler:** only consumes validated scene masters; normalizes stream properties before concat/mux; exports full package.
 - **QA:** validates duration, sync, screenshots, missing frames, audio, subtitle legibility, rights and traceability. User approval separate from machine checks.

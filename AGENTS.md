@@ -10,13 +10,12 @@
 Đối tượng: Codex PC trên Windows. **Hiện chỉ có tài liệu; không giả định runner/engine đã tồn tại.**
 
 ## Source of truth
-1. **`tasks/plan.md` & `tasks/todo.md` — 8 bước MVP ưu tiên, chỉ làm đủ để có pilot chạy thật.**
-2. `docs/spec.md` — mục tiêu dài hạn, riêng mục **MVP profile** giới hạn phạm vi.
-2. `docs/architecture.md` — boundaries; engine TBD until benchmark.
-3. `docs/data-contracts.md` — versioned episode, approval, source, scene manifests.
-4. `docs/rights-and-sources.md` — licensing, factual provenance, safety.
-5. `tasks/plan.md` & `tasks/todo.md` — implementation sequence.
-6. `docs/verification.md` — gates.
+1. **`tasks/plan.md` và `tasks/todo.md` — phạm vi MVP 8 bước, ưu tiên cao nhất.**
+2. `docs/spec.md` — mục tiêu và giới hạn MVP.
+3. `docs/architecture.md` — tham khảo kiến trúc mở rộng, không bắt buộc build hết.
+4. `docs/data-contracts.md` — tham khảo contract sau MVP.
+5. `docs/rights-and-sources.md` — những điều tối thiểu về quyền sử dụng.
+6. `docs/verification.md` — QA thực tế.
 
 ## Mandatory workflow
 

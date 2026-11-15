@@ -44,7 +44,7 @@ User topic / documents
   → research + claim ledger → outline → script → [APPROVAL: SCRIPT]
   → confirmed permitted Vietnamese TTS + measured timings → scene/shot plan
   → storyboard (pilot 3–6 hình; 12–20 cho video dài) → [APPROVAL: STORYBOARD]
-  → asset registry → scene renderer (engine adapter) → QA/retry → per-scene masters
+  → asset có quyền sử dụng → scene renderer (một engine) → QA/sửa lỗi → scene clips
   → episode assembly → final QA → MP4/SRT/thumbnail/metadata/credits
 ```
 
@@ -56,11 +56,10 @@ Xem [architecture](docs/architecture.md) và [data contracts](docs/data-contract
 AGENTS.md                       # Quy tắc Codex
 docs/                           # SPEC, ADR, vận hành, quyền, verification
 tasks/                          # Plan và task breakdown
-schemas/                        # JSON Schema (giai đoạn build)
-pipeline/                       # Orchestration/adapters (giai đoạn build)
-tests/                          # Contract/unit/integration (giai đoạn build)
-episodes/<slug>/                # Manifest, script, approval, nguồn (giai đoạn build)
-runtime/                        # Cache/output cục bộ, gitignored (giai đoạn build)
+studio.py hoặc scripts/         # Một runner nhỏ (dự kiến; chọn khi build)
+scenes/                         # Nguồn cảnh cho engine đã chọn
+episodes/pilot/                 # script.md, storyboard.md, sources.md, approvals.md
+work/                           # WAV/MP4/cache cục bộ, gitignored
 ```
 
 **Không commit**: API keys, tài liệu riêng tư, video lớn, cache/frames, model, token, file tạm. Tham khảo [gitignore](.gitignore).
