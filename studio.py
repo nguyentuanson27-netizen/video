@@ -10,7 +10,8 @@ from time import perf_counter
 
 from PIL import Image
 
-from scenes.valley import VIEW, WORLD, valley
+from scenes.styles import STYLES, demo_layers
+from scenes.valley import VIEW, WORLD
 
 
 FPS = 24
@@ -36,7 +37,7 @@ def frame_at(layers, width, height, progress):
     return frame.convert("RGB")
 
 
-def render(output, duration):
+def render(output, duration, style="moonlit"):
     ffmpeg = shutil.which("ffmpeg")
     if ffmpeg is None:
         raise OSError("ffmpeg must be on PATH")
@@ -45,7 +46,7 @@ def render(output, duration):
     frame_count = FPS * duration
     start = perf_counter()
     WORK.mkdir(exist_ok=True)
-    layers = valley(width)
+    layers = demo_layers(width, style)
     # Keep the destination intact until FFmpeg closes a complete MP4.
     with tempfile.TemporaryDirectory(dir=WORK, prefix="render-") as staging:
         temporary = Path(staging) / output.name
@@ -76,9 +77,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--duration", type=int, choices=range(10, 21), default=12,
                         metavar="SECONDS", help="clip duration, 10–20 seconds (default: 12)")
+    parser.add_argument("--demo", choices=STYLES, help="render a style demo")
     args = parser.parse_args()
     try:
-        render(WORK / "m01-valley.mp4", args.duration)
+        if args.demo:
+            render(WORK / f"demo-{args.demo}.mp4", args.duration, args.demo)
+        else:
+            render(WORK / "m01-valley.mp4", args.duration)
     except (OSError, subprocess.CalledProcessError) as error:
         parser.exit(1, f"Render failed: {error}\n")
 

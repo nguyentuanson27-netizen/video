@@ -31,14 +31,29 @@
 **Mục tiêu:** Từ renderer M01, tạo 3 demo khác nhau nhưng cùng một đoạn nội dung/nhân vật để so sánh dễ.
 
 **Tiêu chí nghiệm thu:**
-- [ ] 3 clip MP4, mỗi clip khoảng 8–15 giây 720p, có parallax/camera và không chỉ trượt ảnh toàn khung.
-- [ ] Có contact sheet/reference và nhận xét chất lượng, thời gian render, nguồn asset.
+- [x] 3 clip MP4, mỗi clip khoảng 8–15 giây 720p, có parallax/camera và không chỉ trượt ảnh toàn khung.
+- [x] Có contact sheet/reference và nhận xét chất lượng, thời gian render, nguồn asset.
 - [ ] Người dùng chọn 1 phong cách, lưu lựa chọn trong `style.md`.
 
 **Kiểm chứng:** ffprobe từng demo; xem 3 clip; xác nhận của người dùng.  
 **Phụ thuộc:** M01.  
 **File dự kiến:** 3 scene/style config hoặc 1 scene + 3 config, `style.md` (≤5 file).  
 **Điểm dừng:** Không tiếp tục sản xuất pilot nếu chưa chốt style.
+
+**Bằng chứng ngày 2026-11-16**
+
+- Đã render tuần tự bằng `studio.py --demo <style>` trên máy M01. Mỗi clip có 288 frame H.264 yuv420p ở 1280×720, 24/1 fps, 12,000 giây theo ffprobe.
+
+  | Clip cục bộ | Thời gian render | Kích thước |
+  | --- | ---: | ---: |
+  | `work/demo-moonlit.mp4` | 34,74 s | 1.205.392 byte |
+  | `work/demo-ink-print.mp4` | 40,84 s | 2.151.387 byte |
+  | `work/demo-paper-cut.mp4` | 37,01 s | 1.658.404 byte |
+
+- FFmpeg giải mã đủ 288 frame mỗi clip với `-xerror`. Bộ lọc blackdetect không báo đoạn đen. FFplay với SDL dummy chạy hết cả ba MP4, mã thoát 0. Log theo tên clip trong `work/`.
+- Đối chiếu chín khung trích ở giây 1, 6 và 11 trên `work/m02-contact.png`. Cây trước máy thay đổi vị trí tương đối rõ rệt so với lữ khách, hồ và thiên thể ở xa trong cả ba mẫu. Trong ảnh thử của B có dải màu ngang cứng trên hồ và áo lữ khách khó đọc. Đã bỏ lượng tử hóa tông ở B và thêm màu nhấn cho áo trước khi render MP4 đưa duyệt.
+- Ba tệp MP4 có SHA-256 khác nhau. Mẫu A có SHA-256 trùng bản M01, xác nhận đường render mặc định giữ nguyên đầu ra. `--demo invalid` trả mã thoát 2.
+- [style.md](../style.md) ghi nguồn hình tự vẽ, nhận xét từng phương án và trạng thái chờ chủ dự án chọn A, B hoặc C.
 
 ## M03 — Chọn tác phẩm, viết script 60 giây và duyệt
 
