@@ -18,6 +18,7 @@ build/
 *.log
 
 # Runtime media and machine-local caches
+work/
 runtime/
 cache/
 tmp/
