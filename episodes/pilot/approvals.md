@@ -10,6 +10,8 @@ Bản gửi duyệt ngày 2026-11-16 (UTC+07:00) là [`script-v1`](script.md), S
 
 ## Giọng thử
 
-**Trạng thái:** `VOICE_PENDING`
+**Trạng thái:** `VOICE_TRIAL_APPROVED`
 
-Chờ chủ dự án đồng ý thử một [giọng dựng sẵn](voice.md) trên bản kịch bản đã duyệt.
+Ngày 2026-11-16 (UTC+07:00), chủ dự án chọn **Quang Sơn** để thử đọc `script-v1`. Đây là preset dựng sẵn của [VieNeu-TTS v3 Turbo](voice.md).
+
+**Chất lượng bản thử:** `NEEDS_REVIEW` · Chờ nghe xác nhận. Timing của bản thử chưa dùng để khóa storyboard.

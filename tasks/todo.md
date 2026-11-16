@@ -82,7 +82,7 @@
 **Mục tiêu:** Lấy giọng phù hợp, không phải xây hệ TTS tổng quát.
 
 **Tiêu chí nghiệm thu:**
-- [ ] Xác định một TTS tiếng Việt miễn phí/quyền sử dụng sẵn, kiểm tra quyền dùng thương mại và **người dùng đồng ý giọng thử**. Nếu chưa được đồng ý, ghi `VOICE_PENDING` và dừng.
+- [x] Xác định một TTS tiếng Việt miễn phí/quyền sử dụng sẵn, kiểm tra quyền dùng thương mại và **người dùng đồng ý giọng thử**. Nếu chưa được đồng ý, ghi `VOICE_PENDING` và dừng.
 - [ ] Xuất WAV lời kể, đo thời lượng lời đọc thật; chỉnh script hoặc nhịp nếu cần **và hỏi duyệt lại nếu sửa nội dung**.
 - [ ] Lưu bảng timing đơn giản theo câu/cảnh và SRT nháp dựa trên âm thanh, không ước lượng suông.
 
@@ -91,7 +91,7 @@
 **File dự kiến:** một script TTS/timing, một file timing/SRT nháp, hướng dẫn voice (≤3 file, WAV trong `work/`).  
 **Điểm dừng:** Không có voice hợp lệ thì không dựng video final.
 
-**Ngày 2026-11-16:** `VOICE_PENDING`. Đã kiểm tra quyền thương mại cho các preset VieNeu-TTS v3 Turbo, xác nhận cả Ngọc Huyền và Quang Sơn có trong demo chính thức và chạy kiểm tra phân giải wheel trên Windows. [Nguồn, thao tác nghe thử và hồ sơ runtime](../episodes/pilot/voice.md).
+**Ngày 2026-11-16:** Chủ dự án chọn Quang Sơn. WAV thử 56,952125 giây ở 48 kHz có 13 cue khớp văn bản và mốc âm thanh. `NEEDS_REVIEW` về độ rõ lời do kết quả nhận dạng vẫn khác kịch bản sau các lượt thử cục bộ. Chờ nghe xác nhận trước khi dùng timing này cho storyboard. [Lệnh chạy, số đo và kết quả kiểm tra](../episodes/pilot/voice.md).
 
 ## M05 — Storyboard và lần duyệt thứ hai
 
