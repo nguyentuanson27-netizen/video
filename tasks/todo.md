@@ -91,6 +91,8 @@
 **File dự kiến:** một script TTS/timing, một file timing/SRT nháp, hướng dẫn voice (≤3 file, WAV trong `work/`).  
 **Điểm dừng:** Không có voice hợp lệ thì không dựng video final.
 
+**Ngày 2026-11-16:** `VOICE_PENDING`. Đã kiểm tra quyền thương mại cho các preset VieNeu-TTS v3 Turbo, xác nhận cả Ngọc Huyền và Quang Sơn có trong demo chính thức và chạy kiểm tra phân giải wheel trên Windows. [Nguồn, thao tác nghe thử và hồ sơ runtime](../episodes/pilot/voice.md).
+
 ## M05 — Storyboard và lần duyệt thứ hai
 
 **Mục tiêu:** Kế hoạch cảnh dựa trên lời đọc thật và style đã chọn.
