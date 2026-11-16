@@ -21,6 +21,8 @@ Ngày 2026-11-16 (UTC+07:00), chủ dự án chọn **Quang Sơn** để thử �
 
 ## Storyboard
 
-**Trạng thái:** `BOARD_PENDING`
+**Trạng thái:** `BOARD_APPROVED`
+
+Ngày 2026-11-16 (UTC+07:00), chủ dự án trả lời “dựng đi” ngay sau câu hỏi duyệt `board-v1` để dựng M06.
 
 Bản gửi duyệt ngày 2026-11-16 (UTC+07:00) là [`board-v1`](storyboard.md). SHA-256 UTF-8 LF của storyboard `c9ea0dca3c2cae71de0eedf9351a2e01dc53b6bc3b7b05d03d6e87bae58f4b0b`. Bản này gắn với `script-v1` (`2b7ff06a75d428151121b4b8266d6221a41089fa07a7866664436d0c7038a5a4`) và timing Quang Sơn (`8069808bbfa6af842f15e05bfc5cc324720c295f44c111f52548707b7aa07879`).

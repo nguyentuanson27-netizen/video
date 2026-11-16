@@ -100,7 +100,7 @@
 **Tiêu chí nghiệm thu:**
 - [x] Tạo **3–6** storyboard frame đại diện cho pilot 60 giây (quy tắc **12–20 frame** dành cho video dài về sau).
 - [x] Mỗi cảnh nêu hình ảnh/layer, chuyển động camera, thời điểm bắt đầu/kết thúc và câu voice tương ứng.
-- [ ] Người dùng duyệt storyboard trong Codex PC; ghi ngày và revision/hash của board + script/timing vào `approvals.md`.
+- [x] Người dùng duyệt storyboard trong Codex PC; ghi ngày và revision/hash của board + script/timing vào `approvals.md`.
 
 **Kiểm chứng:** Xem từng frame; cộng thời lượng các cảnh khớp voice; kiểm tra hash đã duyệt.  
 **Phụ thuộc:** M04.  
@@ -111,7 +111,7 @@
 
 - Chạy `python -m scenes.pilot_board` trong môi trường của repo trên Windows, dựng và xem bốn ảnh RGB 1280×720. Đã sửa nét gió để hai đầu tan dần và giữ hướng nắng nhất quán giữa cảnh 1 và 3. Ảnh tổng hợp ở `work/pilot/storyboard/board-v1.png`. Chạy lại cho cùng SHA-256 ở cả năm PNG. SHA-256 của bốn khung lưu trong [storyboard](../episodes/pilot/storyboard.md).
 - Đối chiếu với WAV Quang Sơn và timing bằng Python. Bốn cảnh lần lượt có 326, 358, 286 và 470 khung, tổng 1.440 khung ở 24 fps. Cả 13 cue nằm trong cảnh tương ứng. Ba điểm cắt đều rơi vào khoảng nghỉ giữa các đoạn.
-- `board-v1` gắn với đúng hash của storyboard, `script-v1` và timing đã chọn. [approvals.md](../episodes/pilot/approvals.md) ở trạng thái `BOARD_PENDING`.
+- Chủ dự án trả lời “dựng đi” cho `board-v1`. Đã đối chiếu lại hash storyboard, `script-v1`, timing và WAV trước khi ghi `BOARD_APPROVED` trong [approvals.md](../episodes/pilot/approvals.md).
 
 ## M06 — Preview 60 giây 720p có đầy đủ lời và nhạc
 
@@ -155,7 +155,7 @@
 ## Checklist Done cho MVP
 
 - [x] 3 demo chuyển động, user chọn style
-- [ ] 2 lần duyệt script + storyboard, đúng phiên bản
+- [x] 2 lần duyệt script + storyboard, đúng phiên bản
 - [x] 1 tác phẩm phù hợp quyền thương mại và lời bình nguyên bản
 - [x] Voice Việt được người dùng đồng ý, có timing thực
 - [ ] 60s preview 720p, final 1080p/24fps **từ nguồn**
