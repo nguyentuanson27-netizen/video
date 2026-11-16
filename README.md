@@ -55,6 +55,18 @@ foreach ($style in 'moonlit', 'ink-wash', 'paper-cut') {
 
 Mỗi lệnh tạo một clip 12 giây ở 1280×720, 24 fps. Lữ khách nâng đèn, giữ rồi hạ xuống trong khi khăn bay và nước chuyển động. Xem [ba phương án và trạng thái lựa chọn](style.md).
 
+## Dựng preview pilot M06
+
+Chạy từ repo trên Windows với [WAV Quang Sơn của bản đã duyệt](episodes/pilot/voice.md) ở `work/pilot/narration.wav`. Runner đối chiếu SHA-256 của WAV, kịch bản, timing và storyboard trước khi dựng.
+
+```powershell
+.\.venv\Scripts\python.exe pilot.py --fetch-font
+.\.venv\Scripts\python.exe pilot.py
+ffprobe -v error -count_frames -show_entries 'stream=codec_name,width,height,r_frame_rate,nb_read_frames,duration:format=duration' -of json work/pilot/preview.mp4
+```
+
+Đầu ra là `work/pilot/preview.mp4` và `work/pilot/preview.srt`. Preview có phụ đề tiếng Việt trên hình, bốn clip cảnh độc lập, và âm thanh AAC ghép từ WAV lời kể và nhạc/SFX tổng hợp trong `pilot.py`. Phông phụ đề Be Vietnam Pro SemiBold được khóa ở revision `cc39c4c2c304bc368c9b7c311ea2bcc6013299fe` và theo SIL OFL 1.1. [Giấy phép Be Vietnam Pro](https://raw.githubusercontent.com/google/fonts/cc39c4c2c304bc368c9b7c311ea2bcc6013299fe/ofl/bevietnampro/OFL.txt)
+
 ## Định hướng kiến trúc
 
 ```text

@@ -118,13 +118,21 @@
 **Mục tiêu:** Một tuyến hoàn chỉnh từ kịch bản được duyệt → cảnh → lồng tiếng → MP4 preview.
 
 **Tiêu chí nghiệm thu:**
-- [ ] Dựng ít nhất 3 cảnh, có chiều sâu 2.5D/camera chuyển động và chuyển cảnh đúng nhịp kể.
-- [ ] Ghép voice đã duyệt, nhạc/SFX hợp pháp (có thể rất ít nhạc), mix giọng rõ ràng; tạo `preview.mp4` 1280×720/24fps với phụ đề SRT.
-- [ ] Không bị cảnh đen bất ngờ, im tiếng, phụ đề lệch nghiêm trọng; có thể xác định scene gây lỗi.
+- [x] Dựng ít nhất 3 cảnh, có chiều sâu 2.5D/camera chuyển động và chuyển cảnh đúng nhịp kể.
+- [x] Ghép voice đã duyệt, nhạc/SFX hợp pháp (có thể rất ít nhạc), mix giọng rõ ràng; tạo `preview.mp4` 1280×720/24fps với phụ đề SRT.
+- [x] Không bị cảnh đen bất ngờ, im tiếng, phụ đề lệch nghiêm trọng; có thể xác định scene gây lỗi.
 
 **Kiểm chứng:** ffprobe preview; **xem/nghe hết 60 giây**, đối chiếu SRT; sửa tối thiểu một lỗi nếu phát hiện.  
 **Phụ thuộc:** M05.  
 **File dự kiến:** render/assemble script, scene configs và SRT (≤3–5 file; media trong `work/`).
+
+**Bằng chứng ngày 2026-11-16**
+
+- Chạy `pilot.py --fetch-font` và `pilot.py` trên Windows. Bốn cảnh 720p mất 63,71 s, 85,86 s, 55,71 s và 97,48 s. S03 được sửa hình vạt áo trên vai, dáng tay đặt áo và bước ra mép nước, rồi render lại riêng trong 54,98 s. Bản ghép kiểm chứng SHA-256 `ae5e215639e24ce87e1fa4afc8754a0006850717e78b39c4c1331bceb442ae41`.
+- ffprobe xác nhận MP4 H.264 1280×720, 1.440 frame, 24/1 fps, AAC 48 kHz và hai stream đủ 60,000 giây. Đã kiểm đủ 1.440 timestamp theo bước 1/24 s. FFmpeg giải mã toàn bộ với `-xerror`. Blackdetect không báo khung đen, silencedetect không báo khoảng dưới −48 dB kéo dài từ 1,8 s. FFplay với hai SDL dummy driver phát hết và thoát mã 0.
+- Đã xem 20 khung lấy xuyên suốt 60 giây trong `work/pilot/preview.contact.png`, kiểm tra dấu tiếng Việt và khung phụ đề. Tất cả 13 cue trong `preview.srt` trùng bản đã đo ở M04. Phép kiểm tra khóa máy quay vẫn đo được thay đổi trong vùng nhân vật ở cả bốn cảnh.
+- Bản mix dùng giai điệu, tiếng gió và sóng tổng hợp trong `pilot.py`. Nhạc nền hạ dưới lời, đo giọng cao hơn phần nền trung bình 23,58 dB RMS trong các cue. AAC đo −20,4 LUFS và true peak −1,2 dBFS. Hồ sơ phát lại tự động và ảnh trích nằm trong `work/`. Chưa có lượt nghe thủ công bản mix mới từ người dùng.
+- Dựng lại khung storyboard cho cùng SHA-256. Thử sửa storyboard trong bản sao tạm và runner từ chối bản khác hash được duyệt. `compileall` và `git diff --cached --check` đạt.
 
 ## M07 — Video cuối 1080p + gói đăng thủ công
 

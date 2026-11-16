@@ -1,12 +1,12 @@
 """Draw the four ink-wash keyframes for the pilot storyboard."""
 
-from math import pi, sin
+from math import cos, pi, sin, tau
 from pathlib import Path
 from random import Random
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-from scenes.styles import curve, fade_into_mist
+from scenes.styles import animated_layer, curve, ease, fade_into_mist, moving_reflections
 from scenes.valley import Layer, VIEW
 from studio import FPS, WORK, frame_at
 
@@ -100,7 +100,7 @@ def brush_branch(layer, knots, seed):
                        rng.choice([(45, 66, 55, 160), (93, 104, 77, 110), (67, 78, 65, 100)]))
 
 
-def traveler(layer, x, y, size, pose):
+def traveler(layer, x, y, size, pose, phase=None, grip=1):
     def world(points):
         return [(x + px * size, y + py * size) for px, py in points]
 
@@ -112,8 +112,15 @@ def traveler(layer, x, y, size, pose):
 
     layer.ellipse(x + 4 * size, y - 1.5 * size, 24 * size, 3.6 * size, "#293d38")
     if pose == "water":
-        shape([(-5, -46), (23, -47), (25, -19), (40, -7), (38, -1), (18, -2),
-               (8, -19), (-16, -7), (-31, -7), (-30, -14), (-12, -29)], "#303f3b")
+        if phase is None:
+            shape([(-5, -46), (23, -47), (25, -19), (40, -7), (38, -1), (18, -2),
+                   (8, -19), (-16, -7), (-31, -7), (-30, -14), (-12, -29)], "#303f3b")
+        else:
+            for offset, tone in [(0, "#293a35"), (pi, "#394b42")]:
+                swing = -19 * cos(phase + offset)
+                foot = (swing, -3 - 10 * max(0, sin(phase + offset)))
+                stroke([(1, -45), (swing * .62 - 2, -21), foot], tone, 10)
+                stroke([foot, (foot[0] + 10, foot[1] + 1)], tone, 6)
         shape(curve((-9, -84), (7, -83), (18, -73), (23, -53), (18, -39),
                     (1, -35), (-24, -42), (-19, -58), (-21, -71)), "#c5b998")
         shape(curve((-15, -89), (-15, -100), (-5, -111), (11, -109),
@@ -126,33 +133,51 @@ def traveler(layer, x, y, size, pose):
     if pose == "grip":
         shape([(-15, -44), (10, -44), (18, -8), (31, -5), (30, 0),
                (11, 0), (1, -20), (-11, -2), (-33, -1), (-33, -7)], "#263b35")
+        flutter = 0 if phase is None else (3.0 + 3 * grip) * sin(phase)
         shape(curve((-10, -87), (10, -82), (20, -63), (18, -55), (21, -43),
-                    (-5, -43), (-42, -37), (-33, -55), (-29, -74)), RUST)
-        stroke(curve((5, -81), (-29, -87), (-47, -74), (-63, -87)), "#b97552", 5)
+                    (-5, -43), (-42 - 4 * flutter, -37 + flutter), (-33, -55), (-29, -74)), RUST)
+        stroke(curve((5, -81), (-29, -87 + flutter), (-47, -74 - flutter),
+                     (-63, -87 + flutter)), "#b97552", 5)
     else:
-        shape([(-13, -45), (11, -42), (21, -18), (37, -6), (37, -1), (23, 0),
-               (2, -17), (-12, -28), (-19, -10), (-37, -9), (-34, -16)], "#273b35")
+        if phase is None:
+            shape([(-13, -45), (11, -42), (21, -18), (37, -6), (37, -1), (23, 0),
+                   (2, -17), (-12, -28), (-19, -10), (-37, -9), (-34, -16)], "#273b35")
+        else:
+            for offset, tone in [(0, "#283931"), (pi, "#32473d")]:
+                sweep = 24 * cos(phase + offset)
+                lift = 11 * max(0, sin(phase + offset))
+                knee, foot = (sweep * .54 + 6, -24), (sweep, -5 - lift)
+                stroke([(-1, -47), knee, foot], tone, 11)
+                stroke([foot, (foot[0] + 12, foot[1] + 1)], tone, 7)
         shape(curve((-13, -88), (4, -85), (17, -71), (16, -55), (21, -39),
                     (2, -34), (-30, -40), (-22, -58), (-26, -73)), RUST)
         stroke(curve((4, -81), (-14, -85), (-23, -76), (-37, -79)), "#b97654", 4)
-    shape(curve((-15, -91), (-22, -105), (-14, -119), (2, -122),
-                (19, -113), (19, -103), (11, -89), (-4, -84)), "#893f35")
-    shape([(10, -114), (19, -110), (25, -104), (19, -101), (18, -94),
-           (9, -91), (5, -101)], "#cf9d7c")
-    layer.ellipse(x + 15 * size, y - 106 * size, 1.5 * size, 1.3 * size, "#533d36")
+    nod = 4 * grip if phase is not None and pose == "grip" else 0
+    hood = curve((-15, -91), (-22, -105), (-14, -119), (2, -122),
+                 (19, -113), (19, -103), (11, -89), (-4, -84))
+    face = [(10, -114), (19, -110), (25, -104), (19, -101), (18, -94),
+            (9, -91), (5, -101)]
+    shape([(px, py + nod) for px, py in hood], "#893f35")
+    shape([(px, py + nod) for px, py in face], "#cf9d7c")
+    layer.ellipse(x + 15 * size, y + (nod - 106) * size, 1.5 * size, 1.3 * size, "#533d36")
     stroke([(-14, -110), (-10, -116), (0, -118)], "#c17b5c", 1.5)
     if pose == "grip":
-        stroke(curve((-12, -72), (-2, -57), (15, -63), (18, -77)), "#723a32", 10)
-        stroke(curve((10, -70), (23, -62), (22, -71), (13, -78)), "#be7457", 8)
-        stroke([(14, -78), (18, -81), (22, -77)], "#d2a180", 5)
-        stroke([(12, -75), (16, -78), (19, -73)], "#d9a784", 4)
+        relax = 1 - grip
+        stroke(curve((-12, -72), (-2, -57), (15, -63), (18 - 6 * relax, -77 + 14 * relax)),
+               "#723a32", 10)
+        stroke(curve((10, -70), (23, -62), (22, -71), (13 + 9 * relax, -78 + 18 * relax)),
+               "#be7457", 8)
+        stroke([(px - 6 * relax, py + 14 * relax) for px, py in [(14, -78), (18, -81), (22, -77)]],
+               "#d2a180", 5)
+        stroke([(px + 9 * relax, py + 18 * relax) for px, py in [(12, -75), (16, -78), (19, -73)]],
+               "#d9a784", 4)
     else:
         stroke(curve((-15, -73), (-10, -59), (3, -53), (12, -59)), "#773e33", 8)
         stroke([(7, -57), (13, -59)], "#d3a080", 3)
     stroke([(-21, -48), (-12, -56), (-11, -66)], "#b56b50", 1.8)
 
 
-def contest(scale):
+def contest(scale, animate=False):
     sky = paper(scale)
     river, land, subject, foreground = (Layer(scale) for _ in range(4))
     sky.ellipse(737, 162, 46, 46, "#bd5a43")
@@ -163,13 +188,25 @@ def contest(scale):
     land.polygon(curve((-12, 484), (127, 449), (256, 440), (362, 453),
                        (443, 474), (377, 474), (279, 463), (126, 478), (-12, 517)), "#697362")
     traveler(subject, 343, 456, 1.01, "walk")
+    actor = subject.image
+    if animate:
+        def walking(layer, progress):
+            phase = tau * 8 * progress
+            x = 282 + 116 * progress
+            y = 451 + .19 * (x - 282) - 2.8 * abs(sin(phase))
+            traveler(layer, x, y, 1.01, "walk", phase=phase)
+
+        actor = animated_layer(scale, walking)
     brush_branch(foreground, [(-11, 509), (42, 274), (59, 171), (125, 116), (225, 107)], 87)
     brush_branch(foreground, [(42, 274), (86, 216), (152, 180), (223, 166)], 42)
-    return [(0.08, sky.image), (0.17, far), (0.31, middle), (0.42, river.image),
-            (0.70, land.image), (0.70, subject.image), (1.20, foreground.image)]
+    layers = [(0.08, sky.image), (0.17, far), (0.31, middle), (0.42, river.image),
+              (0.70, land.image), (0.70, actor), (1.20, foreground.image)]
+    if animate:
+        layers.insert(4, (0.42, moving_reflections(scale, 672, 368, 567, (168, 121, 69), 106, 96)))
+    return layers
 
 
-def north_wind(scale):
+def north_wind(scale, animate=False):
     sky = paper(scale)
     wind, ground, subject, foreground = (Layer(scale) for _ in range(4))
     far, middle = hills(scale, high=True)
@@ -189,19 +226,43 @@ def north_wind(scale):
                   (621, 470), (812, 441), (1066, 441)], "#3b4e45")
     traveler(subject, 536, 465, 1.89, "grip")
     rng = Random(282)
+    leaves = []
     for _ in range(74):
-        x, y = rng.uniform(127, 993), rng.uniform(190, 523)
-        size = rng.uniform(2, 7)
-        if 438 < x < 595 and 223 < y < 469:
+        x, y, size = rng.uniform(127, 993), rng.uniform(190, 523), rng.uniform(2, 7)
+        if not animate and 438 < x < 595 and 223 < y < 469:
             continue
-        foreground.polygon([(x, y), (x + size, y - size * .63), (x + 2.1 * size, y - 2),
-                            (x + size, y + size * .19)],
-                           rng.choice(["#8e805a", "#5a7059", "#a4794e"]))
+        leaves.append((x, y, size, rng.choice(["#8e805a", "#5a7059", "#a4794e"])))
+
+    def scatter(layer, progress):
+        gust = ease(progress / .18) - .95 * ease((progress - .73) / .24)
+        for index, (x, y, size, tone) in enumerate(leaves):
+            if animate:
+                if index / len(leaves) > .15 + .85 * gust:
+                    continue
+                x = (x + 950 - (790 + index * 3) * progress) % 1056
+                y += 8 * sin(tau * 3 * progress + index)
+            if 438 < x < 595 and 223 < y < 469:
+                continue
+            layer.polygon([(x, y), (x + size, y - size * .63), (x + 2.1 * size, y - 2),
+                           (x + size, y + size * .19)], tone)
+
+    actor, flying_leaves = subject.image, foreground.image
+    if animate:
+        def bracing(layer, progress):
+            grip = ease((progress - .20) / .21) - .65 * ease((progress - .77) / .23)
+            phase = tau * 7 * progress
+            traveler(layer, 536 + 2.5 * sin(phase), 465 + 2 - 2 * grip, 1.89, "grip",
+                     phase=phase, grip=grip)
+
+        actor = animated_layer(scale, bracing)
+        flying_leaves = animated_layer(scale, scatter)
+    else:
+        scatter(foreground, 0)
     return [(0.06, sky.image), (0.15, far), (0.28, middle), (0.45, wind.image),
-            (0.76, ground.image), (0.76, subject.image), (1.19, foreground.image)]
+            (0.76, ground.image), (0.76, actor), (1.19, flying_leaves)]
 
 
-def sun(scale):
+def sun(scale, animate=False):
     sky = paper(scale, 12)
     glow, river, ground, subject, foreground = (Layer(scale) for _ in range(5))
     for radius in range(165, 47, -1):
@@ -217,20 +278,61 @@ def sun(scale):
                    (115, 112, 73, 89 - index * 8), 1.7)
     bank(ground, [(359, 601), (437, 520), (550, 495), (666, 471), (785, 441),
                   (911, 412), (1068, 403)], "#405349")
-    traveler(subject, 645, 478, 1.39, "water")
+    if not animate:
+        traveler(subject, 645, 478, 1.39, "water")
     subject.polygon(curve((734, 493), (743, 459), (773, 432), (809, 434),
                           (848, 466), (862, 496), (797, 504)), "#75816b")
     subject.line(curve((744, 462), (770, 445), (795, 441), (824, 449)), "#a3a68b", 4)
-    subject.polygon(curve((756, 455), (763, 430), (792, 424), (814, 432), (837, 453),
-                          (816, 451), (801, 480), (776, 478), (770, 453)), RUST)
-    subject.line(curve((766, 436), (785, 434), (801, 444), (795, 470)), "#d17f56", 4)
+    garment_knots = [(756, 455), (763, 430), (792, 424), (814, 432), (837, 453),
+                     (816, 451), (801, 480), (776, 478), (770, 453)]
+    seam = curve((766, 436), (785, 434), (801, 444), (795, 470))
+    actor = None
+    if animate:
+        def undressing(layer, progress):
+            step = ease((progress - .69) / .26)
+            x, y = 647 - 70 * step, 477 - 12 * step
+            phase = tau * 2 * step if 0 < step < 1 else None
+            traveler(layer, x, y, 1.39, "water", phase=phase)
+            place = ease((progress - .40) / .31)
+            worn = [(602, 408), (617, 376), (638, 368), (666, 371), (682, 394),
+                    (672, 411), (677, 438), (648, 443), (611, 435)]
+            rise = 14 * sin(pi * place)
+            garment = [(ax + (bx - ax) * place, ay + (by - ay) * place - rise)
+                       for (ax, ay), (bx, by) in zip(worn, garment_knots)]
+            layer.polygon(curve(*garment), RUST)
+            start_seam = [(623, 376), (638, 381), (649, 399), (650, 427)]
+            end_seam = [(766, 436), (785, 434), (801, 444), (795, 470)]
+            fold = [(ax + (bx - ax) * place, ay + (by - ay) * place - rise)
+                    for (ax, ay), (bx, by) in zip(start_seam, end_seam)]
+            layer.line(curve(*fold), "#d17f56", 4)
+            if 0 < place < 1:
+                hand_x, hand_y = garment[0]
+                layer.line([(x + 7, y - 96), (x + 33, y - 72), (hand_x, hand_y)],
+                           "#ad9b78", 11)
+                layer.ellipse(hand_x, hand_y, 4.5, 4, "#cf9b79")
+            for ring in range(3):
+                ripple = (progress - .73 - .043 * ring) / .22
+                if 0 < ripple < 1:
+                    rx = 8 + 43 * ripple
+                    layer.draw.arc(layer.pixels((x - rx, y - rx * .2, x + rx, y + rx * .2)),
+                                   10, 341, fill=(139, 123, 73, round(156 * (1 - ripple))),
+                                   width=max(1, round(scale)))
+
+        actor = animated_layer(scale, undressing)
+    else:
+        subject.polygon(curve(*garment_knots), RUST)
+        subject.line(seam, "#d17f56", 4)
     brush_branch(foreground, [(1069, 583), (1020, 339), (1000, 215), (917, 139),
                                (854, 121)], 712)
-    return [(0.08, sky.image), (0.17, far), (0.31, middle), (0.48, river.image),
-            (0.73, ground.image), (0.73, subject.image), (1.21, foreground.image)]
+    layers = [(0.08, sky.image), (0.17, far), (0.31, middle), (0.48, river.image),
+              (0.73, ground.image), (0.73, subject.image), (1.21, foreground.image)]
+    if animate:
+        layers.insert(4, (0.48, moving_reflections(scale, 654, 364, 565, (194, 135, 65), 70, 124)))
+        layers.insert(-1, (0.73, actor))
+    return layers
 
 
-def release(scale):
+def release(scale, animate=False):
     sky = paper(scale, 15)
     river, rock, cloth, hand = (Layer(scale) for _ in range(4))
     far, middle = hills(scale, high=True)
@@ -255,14 +357,29 @@ def release(scale):
                (505, 415), (578, 390), (600, 391), (607, 400), (590, 415),
                (522, 443), (574, 429), (590, 433), (591, 443), (566, 456),
                (496, 480), (423, 482), (349, 456), (300, 445)]
-    hand.polygon(curve(*thumb, *fingers), "#c68c6b")
-    hand.polygon(curve((316, 414), (385, 390), (445, 376), (481, 392),
-                       (510, 419), (480, 452), (426, 462), (370, 446)), "#d89f7a")
-    hand.line(curve((375, 437), (407, 419), (445, 411), (473, 416)), "#a96f57", 3)
-    hand.line(curve((419, 453), (449, 445), (469, 432)), "#b5795c", 2)
-    hand.line(curve((293, 402), (314, 420), (321, 444)), "#82745b", 4)
-    return [(0.06, sky.image), (0.14, far), (0.25, middle), (0.41, river.image),
-            (0.82, rock.image), (0.82, cloth.image), (1.09, hand.image)]
+    palm = curve((316, 414), (385, 390), (445, 376), (481, 392),
+                 (510, 419), (480, 452), (426, 462), (370, 446))
+
+    def open_palm(layer, progress):
+        flex = 1 - ease((progress - .28) / .15) if animate else 0
+        outline = []
+        for x, y in [*thumb, *fingers]:
+            reach = max(0, x - 421)
+            outline.append((x - .49 * reach * flex, y + .44 * reach * flex))
+        layer.polygon(curve(*outline), "#c68c6b")
+        layer.polygon(palm, "#d89f7a")
+        layer.line(curve((375, 437), (407, 419), (445, 411), (473, 416)), "#a96f57", 3)
+        layer.line(curve((419, 453), (449, 445), (469, 432)), "#b5795c", 2)
+        layer.line(curve((293, 402), (314, 420), (321, 444)), "#82745b", 4)
+
+    layers = [(0.06, sky.image), (0.14, far), (0.25, middle), (0.41, river.image),
+              (0.82, rock.image), (0.82, cloth.image), (1.09, hand.image)]
+    if animate:
+        layers.insert(4, (0.41, moving_reflections(scale, 702, 295, 558, (193, 130, 64), 82, 120)))
+        layers.append((1.09, animated_layer(scale, open_palm)))
+    else:
+        open_palm(hand, 1)
+    return layers
 
 
 DRAW_SCENE = (contest, north_wind, sun, release)
