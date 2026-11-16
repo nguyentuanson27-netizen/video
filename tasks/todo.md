@@ -64,7 +64,7 @@
 **Tiêu chí nghiệm thu:**
 - [x] Có tên tác phẩm/phiên bản, đường dẫn nguồn, ghi chú quyền **bản gốc và bản dịch riêng**; không tự copy bản dịch còn bản quyền.
 - [x] `script.md` có lời thuyết minh phù hợp khoảng 60 giây, ý kiến phân tích riêng, nguồn cho các luận điểm quan trọng.
-- [ ] Chủ dự án nói rõ **duyệt script phiên bản này** trong Codex PC; agent ghi ngày và SHA-256 hoặc mã revision đơn giản vào `approvals.md`. Script đổi thì hỏi lại.
+- [x] Chủ dự án nói rõ **duyệt script phiên bản này** trong Codex PC; agent ghi ngày và SHA-256 hoặc mã revision đơn giản vào `approvals.md`. Script đổi thì hỏi lại.
 
 **Kiểm chứng:** Người dùng đọc kịch bản; so nguồn; kiểm tra bản được duyệt khớp file hiện tại.  
 **Phụ thuộc:** M02 (có thể nghiên cứu nguồn sớm).  
@@ -75,7 +75,7 @@
 
 - Đối chiếu tình tiết *Gió Bắc và Mặt Trời* với bản tiếng Anh của George Fyler Townsend trong eBook số 21. [Nguồn và quyền](../episodes/pilot/sources.md) lưu hồ sơ ấn bản của The Met, tình trạng phạm vi công cộng tại Hoa Kỳ từ Project Gutenberg và căn cứ Điều 27, 43 của văn bản hợp nhất hiện hành tại Việt Nam.
 - [Kịch bản tiếng Việt](../episodes/pilot/script.md) gồm bốn đoạn với 35, 33, 29 và 44 tiếng, tổng 141 theo phép đếm trên phần lời đọc. Ước khoảng 60 giây khi đọc 2,6 tiếng/giây và dành khoảng 6 giây cho các nhịp nghỉ. Thời lượng đọc thực tế sẽ đo ở M04.
-- SHA-256 của bản `script-v1` tính trên UTF-8 với xuống dòng LF và được ghi trong [approvals.md](../episodes/pilot/approvals.md) ở trạng thái `SCRIPT_PENDING`.
+- Chủ dự án trả lời “duyệt” cho `script-v1` trong Codex. Đã tính lại SHA-256 trên UTF-8 LF và đối chiếu với bản gửi duyệt trong [approvals.md](../episodes/pilot/approvals.md) trước khi ghi `SCRIPT_APPROVED`.
 
 ## M04 — Giọng kể tiếng Việt, WAV và timing thật
 
