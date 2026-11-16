@@ -18,11 +18,11 @@ Chạy trong repo Windows. Bước fetch tải các tệp model công khai. Bư�
 ffprobe -v error -show_entries 'stream=codec_name,sample_rate,channels,duration' -of json work/pilot/narration.wav
 ```
 
-Bản đọc thử có 13 đoạn nguồn dài tổng cộng 41,680 giây, trước cắt khoảng trống và chỉnh nhịp bằng FFmpeg `atempo=0.84`. WAV ghép thử dài 56,952125 giây, mono PCM 16-bit, 48 kHz. Bản thử, SRT và file `narration-timing.json` lưu ở `work/pilot/`.
+Bản đọc có 13 đoạn nguồn dài tổng cộng 41,680 giây, trước cắt khoảng trống và chỉnh nhịp bằng FFmpeg `atempo=0.84`. WAV ghép dài 56,952125 giây, mono PCM 16-bit, 48 kHz. WAV và SRT lưu ở `work/pilot/`. [Timing đã chọn](narration-timing.json) ghi số mẫu bắt đầu và kết thúc mỗi cue.
 
 ## Kiểm tra bản thử
 
 - FFmpeg giải mã hết WAV. FFplay có mã thoát 0 với SDL dummy. Đo loudness tích hợp −22,0 LUFS và true peak −3,0 dBFS. SHA-256 của WAV là `5f4378d0a47521ec108740f11dc9bcfe43e88ea36de78b1a92be5bd9a04f772e`.
 - 13 cue SRT trùng phần lời của kịch bản được duyệt. Mốc tăng dần, không chồng, khớp số mẫu của đoạn ghép và nằm trong thời lượng WAV. Thử đổi nội dung kịch bản và trạng thái giọng sang `VOICE_PENDING` trong bản sao tạm. Cả hai bị từ chối.
 - Nhận dạng cục bộ với Whisper-small và PhoWhisper-small trả về nhiều khác biệt ở lời kể. Ví dụ gần giây 14, PhoWhisper nhận “Gió Bắc ào tới” thành “gió bắt áo tới”. Kết quả cả bản lần lượt đạt 40,4% và 71,9% độ tương đồng chuỗi tiếng, gồm các phần ASR có thể tự chèn trong khoảng lặng. Đây là chỉ số so khớp bản chép tự động. [Whisper-small](https://huggingface.co/Systran/faster-whisper-small) · [PhoWhisper](https://github.com/VinAIResearch/PhoWhisper) · [Bản CT2 dùng cho phép thử](https://huggingface.co/qbsmlabs/PhoWhisper-small)
-- Đã đối chiếu với các đoạn nguồn chưa chỉnh nhịp, thử hai bản SDK và bộ phiên âm, checkpoint ONNX cũ hơn, thay đổi sampling và PyTorch CPU. Các bản thử ngắn vẫn có sai khác ở cụm quan trọng như “phân thắng bại” và “quất phần phật”. Log lưu trong `work/m04-*.log`. Phiên Codex kiểm tra bằng phát lại và nhận dạng cục bộ. M04 chờ chủ dự án nghe để xác nhận giọng thử.
+- Đã đối chiếu với các đoạn nguồn chưa chỉnh nhịp, thử hai bản SDK và bộ phiên âm, checkpoint ONNX cũ hơn, thay đổi sampling và PyTorch CPU. Log lưu trong `work/m04-*.log`. Phiên Codex kiểm tra bằng phát lại và nhận dạng cục bộ. Sau khi nhận bản WAV và ghi chú, chủ dự án xác nhận đây là giọng địa phương và yêu cầu tiếp tục. Giữ nguyên bản Quang Sơn gửi duyệt và đối chiếu lại SHA-256, số mẫu và nội dung SRT trước khi dùng timing cho M05.
