@@ -67,6 +67,15 @@ ffprobe -v error -count_frames -show_entries 'stream=codec_name,width,height,r_f
 
 Đầu ra là `work/pilot/preview.mp4` và `work/pilot/preview.srt`. Preview có phụ đề tiếng Việt trên hình, bốn clip cảnh độc lập, và âm thanh AAC ghép từ WAV lời kể và nhạc/SFX tổng hợp trong `pilot.py`. Phông phụ đề Be Vietnam Pro SemiBold được khóa ở revision `cc39c4c2c304bc368c9b7c311ea2bcc6013299fe` và theo SIL OFL 1.1. [Giấy phép Be Vietnam Pro](https://raw.githubusercontent.com/google/fonts/cc39c4c2c304bc368c9b7c311ea2bcc6013299fe/ofl/bevietnampro/OFL.txt)
 
+## Dựng bản 1080p và gói đăng thủ công M07
+
+```powershell
+.\.venv\Scripts\python.exe pilot.py --final
+ffprobe -v error -count_frames -show_entries 'stream=codec_name,width,height,r_frame_rate,nb_read_frames,duration:format=duration' -of json work/pilot/final.mp4
+```
+
+Lệnh dựng từng cảnh ở 1920×1080, 24 fps từ mã nguồn và ghép H.264/AAC. Thư mục `work/pilot/` chứa `final.mp4`, `episode.srt`, `thumbnail.png`, `youtube-metadata.md` và `credits-and-rights.md`. Mở bản MP4 để xem phụ đề trên hình. Tệp SRT dùng cho trình phát hoặc quy trình đăng cần phụ đề rời.
+
 ## Định hướng kiến trúc
 
 ```text

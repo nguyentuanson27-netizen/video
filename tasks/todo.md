@@ -139,13 +139,20 @@
 **Mục tiêu:** Tạo bản sản xuất thật, không upscale preview.
 
 **Tiêu chí nghiệm thu:**
-- [ ] Render lại các scene từ nguồn tại **1920×1080/24fps**, ghép MP4 H.264/AAC với giọng rõ, đủ khoảng 60 giây.
-- [ ] Xuất `episode.srt`, `thumbnail.png`, `youtube-metadata.md` (title/description), `credits-and-rights.md` (nguồn tác phẩm, asset, voice, nhạc).
-- [ ] File final đọc được bằng ffprobe; không đánh dấu sẵn sàng nếu có quyền thương mại chưa rõ hoặc chất lượng lỗi.
+- [x] Render lại các scene từ nguồn tại **1920×1080/24fps**, ghép MP4 H.264/AAC với giọng rõ, đủ khoảng 60 giây.
+- [x] Xuất `episode.srt`, `thumbnail.png`, `youtube-metadata.md` (title/description), `credits-and-rights.md` (nguồn tác phẩm, asset, voice, nhạc).
+- [x] File final đọc được bằng ffprobe; không đánh dấu sẵn sàng nếu có quyền thương mại chưa rõ hoặc chất lượng lỗi.
 
 **Kiểm chứng:** ffprobe độ phân giải/fps/codec; xem/nghe toàn bộ bản final; so SRT và checklist nguồn.  
 **Phụ thuộc:** M06.  
 **File dự kiến:** bổ sung final profile và script export, metadata Markdown (≤3–5 file; output trong `work/`).
+
+**Bằng chứng ngày 2026-11-16**
+
+- Chạy `pilot.py --final` toàn bộ. Bốn cảnh vẽ từ nguồn ở 1920×1080 mất 138,16 s, 177,32 s, 115,80 s và 188,66 s. Bản ghép M07 có 12.333.369 byte, SHA-256 `b2683ad4ec3158f201c4859d21f5fa2a82d21d5c16f7d9f951b139c0474dbc39`. Log ở `work/m07-render.log`.
+- ffprobe đọc H.264 yuv420p 1920×1080/24 fps và AAC 48 kHz cùng đủ 60,000 giây. Đã kiểm 1.440 timestamp, giải mã hết bằng FFmpeg và phát lại hết bằng FFplay với SDL dummy, mã thoát 0. Blackdetect và silencedetect không báo đoạn bất thường. Mức âm tích hợp −20,4 LUFS, true peak −1,2 dBFS. Đã kiểm 20 khung trích, đủ bốn cảnh. Lượt nghe thủ công bản mix vẫn chờ người dùng.
+- Đã mở thumbnail 1280×720, đối chiếu 13 cue SRT với bản đo ở M04 và kiểm hai tệp Markdown xuất ra trùng nguồn. Nguồn tác phẩm, giọng, phông và nhạc có hồ sơ tại [ghi công và quyền](../episodes/pilot/credits-and-rights.md).
+- Phát hiện dáng chân ở S03 đổi đột ngột giữa khung 196 và 197 của cảnh. Hai khung giải mã đã lưu ở `work/pilot/m07-native-step-cut.png` để đối chiếu sau khi sửa tại M08.
 
 ## M08 — Sửa đúng một cảnh, chạy lại và bàn giao
 
@@ -166,8 +173,8 @@
 - [x] 2 lần duyệt script + storyboard, đúng phiên bản
 - [x] 1 tác phẩm phù hợp quyền thương mại và lời bình nguyên bản
 - [x] Voice Việt được người dùng đồng ý, có timing thực
-- [ ] 60s preview 720p, final 1080p/24fps **từ nguồn**
-- [ ] MP4/SRT/thumbnail/metadata/credits; không có thanh toán tự động
+- [x] 60s preview 720p, final 1080p/24fps **từ nguồn**
+- [x] MP4/SRT/thumbnail/metadata/credits; không có thanh toán tự động
 - [ ] Phát hết video; ffprobe kiểm tra stream; thử sửa/render lại một scene
 - [ ] Có hướng dẫn tái hiện; không nhận bừa kết quả chưa chạy
 

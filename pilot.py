@@ -31,6 +31,7 @@ CAMERAS = (
     ((8, -10, .027), (13, 16, .068)),
     ((7, 3, .050), (12, 0, .103)),
 )
+SIZES = {"preview": (1280, 720), "final": (1920, 1080)}
 
 
 def digest(path, normalize=False):
@@ -250,30 +251,57 @@ def write_subtitles(timing, output):
     output.write_text("".join(captions), encoding="utf-8", newline="\n")
 
 
-def render_preview():
+def package_final(timing):
+    write_subtitles(timing, WORK / "episode.srt")
+    layers = shot_layers(1, 1280)
+    alternate = ((-41, 6, .11), (-41, 6, .11))
+    art = render_frame(layers, (1280, 720), .54, alternate)
+    draw = ImageDraw.Draw(art)
+    draw.ellipse((1040, 99, 1154, 213), fill="#b85340")
+    headline = ImageFont.truetype(FONT, 81)
+    attribution = ImageFont.truetype(FONT, 28)
+    draw.multiline_text((70, 137), "Gió Bắc\nvà Mặt Trời", font=headline,
+                        fill="#253c33", stroke_width=2, stroke_fill="#f5ead2", spacing=8)
+    draw.text((77, 361), "Ngụ ngôn Aesop", font=attribution, fill="#594d36",
+              stroke_width=1, stroke_fill="#f5ead2")
+    art.convert("RGB").save(WORK / "thumbnail.png", optimize=True)
+    for name in ("youtube-metadata.md", "credits-and-rights.md"):
+        shutil.copyfile(EPISODE / name, WORK / name)
+
+
+def render_episode(profile):
     timing = approved_timing()
     if digest(FONT) != FONT_HASH:
         raise ValueError("The subtitle font differs from the pinned asset.")
     ffmpeg = shutil.which("ffmpeg")
     if not ffmpeg:
         raise OSError("ffmpeg must be on PATH.")
-    scene_dir = WORK / "preview-scenes"
+    scene_dir = WORK / f"{profile}-scenes"
     scene_dir.mkdir(exist_ok=True)
     clips = [scene_dir / f"s{index + 1:02}.mp4" for index in range(len(DRAW_SCENE))]
     for index, clip in enumerate(clips):
-        render_shot(ffmpeg, index, (1280, 720), timing["cues"], clip)
+        render_shot(ffmpeg, index, SIZES[profile], timing["cues"], clip)
     write_soundtrack(timing)
-    write_subtitles(timing, WORK / "preview.srt")
-    assemble(ffmpeg, clips, WORK / "preview.mp4")
-    print(WORK / "preview.mp4", flush=True)
+    output = WORK / f"{profile}.mp4"
+    if profile == "final":
+        package_final(timing)
+    else:
+        write_subtitles(timing, WORK / "preview.srt")
+    assemble(ffmpeg, clips, output)
+    print(output, flush=True)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--fetch-font", action="store_true", help="download the pinned OFL subtitle font")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--fetch-font", action="store_true", help="download the pinned OFL subtitle font")
+    mode.add_argument("--final", action="store_true", help="render 1080p from source and export the package")
     args = parser.parse_args()
     try:
-        fetch_font() if args.fetch_font else render_preview()
+        if args.fetch_font:
+            fetch_font()
+        else:
+            render_episode("final" if args.final else "preview")
     except (OSError, ValueError, subprocess.CalledProcessError) as error:
         parser.exit(1, f"Pilot failed: {error}\n")
 
