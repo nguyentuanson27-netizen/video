@@ -1,0 +1,100 @@
+{
+  "script_sha256": "2b7ff06a75d428151121b4b8266d6221a41089fa07a7866664436d0c7038a5a4",
+  "voice": "Quang Sơn",
+  "sample_rate": 48000,
+  "duration_samples": 2733702,
+  "wav_sha256": "5f4378d0a47521ec108740f11dc9bcfe43e88ea36de78b1a92be5bd9a04f772e",
+  "cues": [
+    {
+      "cue": 1,
+      "beat": 1,
+      "start_sample": 34560,
+      "end_sample": 188794,
+      "text": "Một chiếc áo khoác đủ để phân thắng bại."
+    },
+    {
+      "cue": 2,
+      "beat": 1,
+      "start_sample": 211834,
+      "end_sample": 430710,
+      "text": "Gió Bắc và Mặt Trời cá xem ai khiến một lữ khách cởi áo trước."
+    },
+    {
+      "cue": 3,
+      "beat": 1,
+      "start_sample": 453750,
+      "end_sample": 614111,
+      "text": "Anh vẫn lặng lẽ bước, hai tay giấu dưới tà áo."
+    },
+    {
+      "cue": 4,
+      "beat": 2,
+      "start_sample": 688511,
+      "end_sample": 832138,
+      "text": "Gió Bắc ào tới. Tà áo quất phần phật."
+    },
+    {
+      "cue": 5,
+      "beat": 2,
+      "start_sample": 855178,
+      "end_sample": 1021004,
+      "text": "Anh vội túm lấy hai vạt, cúi đầu bước tiếp."
+    },
+    {
+      "cue": 6,
+      "beat": 2,
+      "start_sample": 1044044,
+      "end_sample": 1174865,
+      "text": "Gió càng gào, anh càng ghì chặt."
+    },
+    {
+      "cue": 7,
+      "beat": 2,
+      "start_sample": 1197905,
+      "end_sample": 1331552,
+      "text": "Cuối cùng, Gió Bắc đành nhường lượt."
+    },
+    {
+      "cue": 8,
+      "beat": 3,
+      "start_sample": 1405952,
+      "end_sample": 1605590,
+      "text": "Mặt Trời rọi xuống con đường. Hơi ấm ngấm qua lớp vải."
+    },
+    {
+      "cue": 9,
+      "beat": 3,
+      "start_sample": 1628630,
+      "end_sample": 1901912,
+      "text": "Anh cởi áo khoác, vắt lên một tảng đá, rồi xuống tắm ở con suối ven đường."
+    },
+    {
+      "cue": 10,
+      "beat": 4,
+      "start_sample": 1976312,
+      "end_sample": 2083084,
+      "text": "Cứ nhìn hai bàn tay người lữ khách."
+    },
+    {
+      "cue": 11,
+      "beat": 4,
+      "start_sample": 2106124,
+      "end_sample": 2357826,
+      "text": "Trước cơn gió, chúng siết lại. Dưới nắng ấm, chúng tự buông."
+    },
+    {
+      "cue": 12,
+      "beat": 4,
+      "start_sample": 2380866,
+      "end_sample": 2533092,
+      "text": "Gió Bắc đã vô tình cho anh thêm lý do để giữ áo."
+    },
+    {
+      "cue": 13,
+      "beat": 4,
+      "start_sample": 2556132,
+      "end_sample": 2722182,
+      "text": "Mặt Trời cho anh một lý do để tự cởi ra."
+    }
+  ]
+}

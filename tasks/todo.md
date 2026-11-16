@@ -82,14 +82,16 @@
 **Mục tiêu:** Lấy giọng phù hợp, không phải xây hệ TTS tổng quát.
 
 **Tiêu chí nghiệm thu:**
-- [ ] Xác định một TTS tiếng Việt miễn phí/quyền sử dụng sẵn, kiểm tra quyền dùng thương mại và **người dùng đồng ý giọng thử**. Nếu chưa được đồng ý, ghi `VOICE_PENDING` và dừng.
-- [ ] Xuất WAV lời kể, đo thời lượng lời đọc thật; chỉnh script hoặc nhịp nếu cần **và hỏi duyệt lại nếu sửa nội dung**.
-- [ ] Lưu bảng timing đơn giản theo câu/cảnh và SRT nháp dựa trên âm thanh, không ước lượng suông.
+- [x] Xác định một TTS tiếng Việt miễn phí/quyền sử dụng sẵn, kiểm tra quyền dùng thương mại và **người dùng đồng ý giọng thử**. Nếu chưa được đồng ý, ghi `VOICE_PENDING` và dừng.
+- [x] Xuất WAV lời kể, đo thời lượng lời đọc thật; chỉnh script hoặc nhịp nếu cần **và hỏi duyệt lại nếu sửa nội dung**.
+- [x] Lưu bảng timing đơn giản theo câu/cảnh và SRT nháp dựa trên âm thanh, không ước lượng suông.
 
 **Kiểm chứng:** Nghe WAV; ffprobe duration; so transcript/timing/SRT nháp.  
 **Phụ thuộc:** M03.  
 **File dự kiến:** một script TTS/timing, một file timing/SRT nháp, hướng dẫn voice (≤3 file, WAV trong `work/`).  
 **Điểm dừng:** Không có voice hợp lệ thì không dựng video final.
+
+**Bằng chứng ngày 2026-11-16:** Chủ dự án xác nhận đây là giọng địa phương và yêu cầu tiếp tục với bản Quang Sơn. WAV 56,952125 giây ở 48 kHz có 13 cue khớp văn bản, SRT và số mẫu của đoạn ghép. Hash WAV trùng bản đã gửi. Đã lưu [timing của bản đọc](../episodes/pilot/narration-timing.json) và trạng thái `VOICE_READY` trong [approvals.md](../episodes/pilot/approvals.md). [Lệnh chạy, số đo và kết quả kiểm tra](../episodes/pilot/voice.md).
 
 ## M05 — Storyboard và lần duyệt thứ hai
 
@@ -149,7 +151,7 @@
 - [x] 3 demo chuyển động, user chọn style
 - [ ] 2 lần duyệt script + storyboard, đúng phiên bản
 - [x] 1 tác phẩm phù hợp quyền thương mại và lời bình nguyên bản
-- [ ] Voice Việt được người dùng đồng ý, có timing thực
+- [x] Voice Việt được người dùng đồng ý, có timing thực
 - [ ] 60s preview 720p, final 1080p/24fps **từ nguồn**
 - [ ] MP4/SRT/thumbnail/metadata/credits; không có thanh toán tự động
 - [ ] Phát hết video; ffprobe kiểm tra stream; thử sửa/render lại một scene
